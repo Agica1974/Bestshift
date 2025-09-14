@@ -1,0 +1,450 @@
+
+  
+ * , ::before, :after {
+    box-sizing: border-box;
+  } 
+
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    margin: auto;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+   
+} 
+
+.calendar-container {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: min(600px, 95%);
+    max-height: 100vh; /* Bildschirmhöhe  */
+    text-align: center;
+    /* margin-top: -75px; */
+    
+    overflow: hidden; /* Verhindert Scroll-Probleme */
+    
+}
+
+#calendar-header {
+    /* border: 1px solid blueviolet; */
+    font-size: 2rem;
+    margin-top: 0px;
+}
+
+/* Wochentage */
+.day-header {
+    display: grid;
+    align-items: last baseline;
+    height: 1.5rem;
+    /* border: #47adb5 1px solid; */
+    margin-bottom: 0;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 1.5rem repeat(6, 1fr); /*Erste Zeile (Wochentage) mit fester Höhe */
+    /* height: 100%; *//* Stellt sicher, dass das Grid die volle Höhe nutzt */
+    flex-grow: 1;
+    gap: 5px;
+    margin-top: 5px;
+    /* border: 1px solid green; */
+}
+
+.weekday, .day {
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.weekday {
+    font-weight: bold;
+    background-color: #ddd;
+}
+
+.day {
+    background-color: #fff;
+    border: 1px solid #47adb5;
+    height: calc((100vh - 200px) / 6); /* Responvive Höhe*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Optional: Anpassungen für graue Tage */
+
+.gray-day { 
+    color: #aaa;
+    background-color: #f0f0f0;
+}
+
+
+            /*****.controls *****/
+            /* XXXXXXXXXXXXXXXX */
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;  /* Vertikale Zentrierung */
+    justify-content: space-between; /* Verteilt die Inhalte in der Leiste */
+    width: 100%; 
+    margin-top: 5px;
+    background-color: white;
+    
+    /* border: 1px solid violet;    */
+}
+
+button {
+    justify-content: center;
+    align-items: center;
+    /* width: 6rem; */
+    width: calc((100vw - 20px) / 4);
+    height: 2.5rem;
+    padding: 0.5em 1em;
+    background-color: #47adb5;
+    border: solid 1px white;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    
+}
+
+button:hover {
+    background-color: #008999;
+    color: aqua;
+    border: solid 1px aqua;
+    
+}
+
+/* Monatswechsel-Buttons*/
+.changeMonthButtons {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%; /*Maximale Breite*/
+    gap: 1.5px;
+    flex-grow: 1;
+}
+
+/* Optionsmenü */
+#optionsMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    transform: translate(-50%, -60%); /* Startet etwas höher */
+    width: fit-content;
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+   
+}
+
+#optionsMenu.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-50%);
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+
+#optionsMenu label,
+#optionsMenu input,
+#optionsMenu select,
+#optionsMenu button {
+    display: flex;
+    width: 8rem; /* Breite für Formularelemente */
+    margin: 5px 0;
+    box-sizing: border-box;
+}
+
+#savedOptions {
+    
+    background: white;
+    width: min(600px, 95%);
+    border-radius: 6px;
+    display: none; /* Muss zu flex geändert werden, um es sichtbar zu machen */
+    /* opacity: 0; Startwert: Unsichtbar */
+    transform: translateY(-20px); /* Startwert: Etwas nach oben verschoben */
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 2px;
+    transition: transform 0.6s ease-in-out;
+    margin-top: -3.1rem;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: scroll;
+    position: relative;
+    
+}
+
+#closeSavedOptions {
+    position: absolute;
+    bottom: 3.3rem;
+    right: 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #47adb5;;
+    background: white;
+    border: 1px solid#47adb5;;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    z-index: 10; /* Falls andere Elemente es überdecken */
+    transition: transform 0.9s ease-in-out;
+    transform: translateY(-20px);
+   
+}
+
+#closeSavedOptions.show {
+    opacity: 1;
+    transform: translateY(-20%);
+    
+    
+}
+
+.option-item {
+    position: relative;  /* Ermöglicht absolute Positionierung der Icons */
+    display: flex;
+    align-items: center;
+    justify-content: center;  /* Abstand zwischen Text und Icons */
+    padding: 0.5rem 1rem;
+    border: 1px solid #47adb5;
+    border-radius: 3px;
+    cursor: pointer;
+    min-width: 2rem;
+    min-height: 1.5rem;
+    background-color: white;
+}
+
+/* Schicht-Name linksbündig */
+.option-name {
+    flex-grow: 0;  /*Füllt den verfügbaren Platz*/
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Gemeinsames Styling für Icons */
+.edit-button, .delete-button {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Bearbeiten-Icon (Bleistift) weiter links platzieren */
+.edit-button {
+    right: 30px;
+    color: #007bff;
+}
+
+/* Löschen-Icon (X) bleibt ganz rechts */
+.delete-button {
+    right: 5px;
+    color: red;
+}
+
+.edit-button:hover {
+    color: darkblue;
+}
+
+.delete-button:hover {
+    color: darkred;
+}
+/* Wenn das Element sichtbar sein soll */
+#savedOptions.show {
+    opacity: 1; /* Sichtbar */
+    transform: translateY(0); /* Normalposition */
+}
+
+
+.selected {
+    border: 1px solid black!important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    
+    
+}
+
+                /****** MODAL FÜR TERMINE ******/
+.modal {
+    display: none;
+    position: absolute;
+    z-index: 1001;
+    width: 25%;
+    background: white;
+    border: 1px solid black;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal::after {
+    content: "";
+    position: absolute;
+    border-style: solid;
+    border-width: 10px;
+    display: block;
+}
+
+.modal[data-arrow="top"]::after {
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: white transparent transparent transparent;
+    
+}
+
+.modal[data-arrow="bottom"]::after {
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: transparent transparent white transparent;
+   
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content input {
+    margin-bottom: 10px;
+}
+#closeAppointment {
+    font-size: 25px;
+}
+
+/* Termin-Anzeige unter einem Tag */
+.appointment-display {
+    font-size: 12px;
+    color: #333;
+    margin-top: 4px;
+}
+
+/* Schließen-Button  savedOptions*/
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 14px;
+    cursor: pointer;
+   
+}
+
+
+
+                 /****** MODAL FÜR TERMINE ENDE******/
+
+
+
+
+/* Auf Tablets und kleinere Bildschirme (max-width: 1180px) */
+@media (max-width: 1180px) {    
+
+     #calendar {
+        grid-template-columns: repeat(7, 1fr); /* Sieben Spalten bleiben */
+        grid-template-rows: 1.5rem repeat(6, 1fr); /* Beibehaltung der festen Höhe für Wochentage */
+        gap: 3px;
+    } 
+    .calendar-container {
+        padding: 10px;
+        width: 95%; /* Maximale Breite für sehr kleine Geräte */  
+    }
+    .controls {
+        width: 100%;
+    }
+
+     .option-item {
+        font-size: 1rem;
+         /* Kleinere Schrift auf mobilen Geräten */
+    }
+    .day {
+        height: calc((100vh - 200px) / 6);
+        font-size: 1.5rem;
+    }
+    .savedOptions {
+        overflow-x: scroll;
+    }
+
+    }
+
+   @media (max-width: 844px) {
+    
+    .day {
+        
+        font-size: 1rem;
+    }
+    .option-item {
+        font-size: 0.75rem;
+         /* Kleinere Schrift auf mobilen Geräten */
+    }
+    
+   } 
+
+/* Auf sehr kleinen Geräten (max-width: 480px) */
+@media (max-width: 480px) {
+    /* .controls {
+        
+        width: 100%;
+       
+    } */
+ 
+     button {
+        font-size: 0.75rem;
+        height: 2rem; 
+    } 
+
+    .calendar-container {
+        padding: 10px;
+        width: 95%; /* Maximale Breite für sehr kleine Geräte */
+       
+       
+    }
+
+    #calendar {
+        grid-template-columns: repeat(7, 1fr); /* Sieben Spalten */
+        grid-template-rows: 1.5rem repeat(6, 1fr);
+        gap: 2px;
+    }
+
+    .day {
+        height: calc((100vh - 170px) / 6);
+        font-size: 0.75rem;
+    }
+    .optionsItem {
+        font-size: 0.75rem; /* Noch kleinere Schrift */
+       
+    }
+
+    .day-header {
+        font-size: 1rem; /* Kleine Schriftgröße für die Wochentage */
+    }
+    .savedOptions {
+
+        overflow-x: scroll;
+        
+    }
+}

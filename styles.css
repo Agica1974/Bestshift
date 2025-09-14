@@ -1,0 +1,397 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+/* .controls {
+    display: flex;
+   
+    align-items: flex-start;
+    width: 90%;
+    height: 2rem;
+    max-width: 400px;
+    padding: 5px;
+} */
+.controls {
+    display: flex;
+    align-items: center;  /* Vertikale Zentrierung */
+    justify-content: space-between; /* Verteilt die Inhalte in der Leiste */
+    width: 100%;  /* Verwendet die gesamte verfügbare Breite */
+    margin-top: 5px;
+    max-width: 600px;  /* Maximale Breite der Leiste */
+}
+
+button {
+   
+    justify-content: center;
+    align-items: center;
+    width:auto;
+    height: 2.5rem;
+    padding: 10px;
+    background-color: #47adb5;
+    border: solid 1px white;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    
+    
+  
+  }
+  
+  button:hover {
+    background-color: #008999;
+    color: aqua;
+    border: solid 1px aqua;
+  }
+  
+.calendar-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+#calendar-header {
+    border: 1px solid blueviolet;
+    margin: 0;
+}
+
+/* Wochentage */
+
+.day-header {
+   display: grid;
+   align-items:last baseline;
+   height: fit-content;
+   border:#47adb5 1px solid ;
+   margin-bottom: 0;
+  }
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    /* grid-template-rows: repeat(7, 1fr); */
+    grid-template-rows: 1.5rem repeat(6, 1fr); /* Erste Zeile (Wochentage) mit fester Höhe */
+    gap: 5px;
+    
+    margin-top: 5px;
+}
+
+/* .week-row, .week {
+    display: contents;
+    background-color: aquamarine;
+} */
+
+.weekday, .day {
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.weekday {
+    font-weight: bold;
+    background-color: #ddd;
+}
+/* Einzelne Tage */
+.day {
+    background-color: #fff;
+    border: 1px solid #47adb5;
+    height: calc((100vh - 320px) / 6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Optional: Schriftgröße für mobile Geräte anpassen */
+@media (max-width: 768px) {
+    .day {
+        font-size: 12px; /* Kleinere Schrift auf mobilen Geräten */
+    }
+}
+
+@media (max-width: 480px) {
+    .day {
+        font-size: 10px; /* Noch kleinere Schrift auf sehr kleinen Geräten */
+    }
+}
+
+
+.gray-day { 
+    color: #aaa;
+    background-color: #f0f0f0;
+     }
+
+.changeMonthButtons {
+        display: flex;
+        justify-content: flex-end;
+        width: 600px;
+        gap: 3px;
+        flex-grow: 1;
+        
+     }
+
+     /* #optionsMenu {
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100%);
+        background: white;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        z-index: 1000;
+        transition: transform 0.3s ease-in-out;
+    } */
+    #optionsMenu {
+        position: relative; /* Damit das X oben rechts positioniert werden kann */
+        padding: 20px;
+        background-color: white;
+        border: 1px solid #ccc;
+        width: 300px; /* Oder die gewünschte Breite */
+        display: none; /* Standardmäßig verborgen */
+    }
+    
+    #closeOptionsMenu {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        color: red;
+        font-weight: bold;
+    }
+    
+    #closeOptionsMenu:hover {
+        color: darkred;
+    }
+    
+    #addNewShiftButton {
+        font-size: 24px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        padding-top: 10px;
+    }
+    
+   
+    /* Menü sichtbar machen */
+    #optionsMenu.show {
+        transform: translateX(-50%) translateY(0);
+    }
+    
+
+
+
+#optionsMenu label,
+#optionsMenu input,
+#optionsMenu select,
+#optionsMenu button {
+  display: block;
+  width: 100%;
+  max-width: 200px; /*** Festgelegte Breite der Options Menü ***/
+  margin: 10px 0px;
+  box-sizing: border-box;
+}
+
+
+
+#savedOptions {
+    width: 100%;
+    background: white;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    
+}
+
+.option-item {
+    border: 1px solid #47adb5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    width: 6rem;
+    border-radius: 3px;
+    cursor: pointer;
+    
+    
+}
+
+.selected {
+    font-weight: bold;
+    border: 3px solid rgb(136, 255, 0);
+    
+  }
+
+  #addNewShiftButton {
+    font-size: 24px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding-top: 10px;
+}
+
+
+
+.hidden {
+    display: none;
+}
+
+  /* Modal CSS für Termine Menü*/
+  /* Modal für Termin-Eintragung */
+.modal {
+    display: none;
+    position: absolute; /* Von fixed auf absolute ändern */
+    z-index: 1001;
+    width: 200px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Sprechblasen-Pfeil */
+.modal::after {
+    content: "";
+    position: absolute;
+    border-style: solid;
+    border-width: 10px;
+    display: block;
+}
+
+/* Spitze nach oben (wenn Modal unter dem Tag ist) */
+.modal[data-arrow="top"]::after {
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: white transparent transparent transparent;
+}
+
+/* Spitze nach unten (wenn Modal über dem Tag ist) */
+.modal[data-arrow="bottom"]::after {
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: transparent transparent white transparent;
+}
+
+/* Modal-Inhalt */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Eingabefelder */
+.modal-content input {
+    margin-bottom: 10px;
+}
+
+/* Auf Tablets und kleinere Bildschirme (max-width: 768px) */
+@media (max-width: 1105px) {
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    button {
+        width: 100%; /* Schaltflächen sollen auf kleinen Geräten die Breite einnehmen */
+    }
+
+    .calendar-container {
+        padding: 15px;
+    }
+
+    #calendar {
+        grid-template-columns: repeat(7, 1fr); /* Sieben Spalten bleiben */
+        grid-template-rows: 1.5rem repeat(6, 1fr); /* Beibehaltung der festen Höhe für Wochentage */
+        gap: 3px;
+    }
+    .calendar-container {
+        padding: 10px;
+        width: 95%; /* Maximale Breite für sehr kleine Geräte */
+       
+       
+    }
+
+     .option-item {
+        font-size: 0.75rem;
+         /* Kleinere Schrift auf mobilen Geräten */
+    }
+    .day {
+        height: 128px;
+        font-size: 1.5rem;
+
+    }
+    }
+
+    .savedOptions {
+
+        overflow-x: scroll;
+        
+    }
+
+/* Auf sehr kleinen Geräten (max-width: 480px) */
+@media (max-width: 480px) {
+    .controls {
+        
+        width: 100%;
+       
+    }
+
+    button {
+        width: 100%;
+        height: 2rem; /* Kleinere Schaltflächenhöhe */
+    }
+
+    .calendar-container {
+        padding: 10px;
+        width: 95%; /* Maximale Breite für sehr kleine Geräte 
+       
+       
+    }
+
+    #calendar {
+        grid-template-columns: repeat(7, 1fr); /* Sieben Spalten */
+        grid-template-rows: 1.5rem repeat(6, 1fr);
+        gap: 2px;
+    }
+
+    .day {
+        height: 84px;
+        font-size: 0.75rem;
+    }
+    .optionsItem {
+        font-size: 0.75rem; /* Noch kleinere Schrift */
+       
+    }
+
+    .day-header {
+        font-size: 1rem; /* Kleine Schriftgröße für die Wochentage */
+    }
+    .savedOptions {
+
+        overflow-x: scroll;
+        
+    }
+}

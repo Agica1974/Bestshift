@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schichtplaner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="responsiveStyles.css">
+    <script src="script.js" defer></script>
+    <script src="appointment.js"></script>
+</head>
+<body>
+    <div class="calendar-container">
+        <h2 id="calendar-header"></h2>
+        <div id="calendar"></div>
+
+        <div class="controls">
+            
+                <div id="optionsMenu">
+                    <span id="closeOptionsMenu" class="close">X</span> <!-- Schließen-X -->
+                    <label>Schicht: </label><input type="text" id="optionShift">
+                    <label>Farbe: </label><input type="color" id="optionColor">
+                    <label>Wochenanfang</label><select id="weekStartSelect">
+                        <option value="0">Sonntag</option>
+                        <option value="1">Montag</option>
+                        <option value="2">Dienstag</option>
+                        <option value="3">Mittwoch</option>
+                        <option value="4">Donnerstag</option>
+                        <option value="5">Freitag</option>
+                        <option value="6">Samstag</option>
+                    </select>
+                    <button id="saveOption">Speichern</button>
+                    
+            
+                </div><!-- optionsMenu_ENDE -->
+    
+                    <div class="changeMonthButtons" >
+                        <button id="optionsButton">Vorlagen</button>
+                        <button id="addNewShiftButton">+</button> <!-- Plus-Zeichen für neue Schichten -->
+                        <button id="prevMonth">&#9665;</button><!-- Zurück zur Vorherigen Monat -->
+                        <button id="nextMonth">&#9655;</button><!-- Vor zur nächsten Monat -->
+                    </div>
+    
+                
+        </div><!-- controls_ENDE -->
+       
+    </div> <!-- class="calendar-container">ENDE-->
+
+    
+       
+
+          
+
+             <!-- Beispiel für einen gespeicherten Eintrag mit Bearbeiten- und Löschen-Icons -->
+             <span id="closeSavedOptions">X</span> <!-- Schließen-X --> 
+         <div id="savedOptions">
+           
+            <div class="option-item">
+                
+                <span class="option-name">F</span>
+                
+                <!-- Bearbeiten -->
+                <button class="edit-button">
+                    <i class="fa fa-pencil"></i> <!-- Bleistift-Icon für Bearbeiten -->
+                </button>
+                <!-- Löschen -->
+                <button class="delete-button">
+                    <i class="fa fa-times" style="color: red;"></i> <!-- Rotes X für Löschen -->
+                </button>
+            </div>
+        </div>
+        
+            
+
+    <!-- Hier wird die Neu Termin Menü angezeigt -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <span id="closeAppointment" class="close">&times;</span>
+            <h2>Neuer Termin</h2>
+            <label>Titel:</label>
+            <input type="text" id="appointmentTitle">
+            
+            <label>Beginn:</label>
+            <input type="time" id="appointmentStart">
+            
+            <label>Ende:</label>
+            <input type="time" id="appointmentEnd">
+            
+            <label>Ort:</label>
+            <input type="text" id="appointmentLocation">
+    
+            <button id="saveAppointment">Speichern</button>
+        </div>
+    </div>
+    
+    
+    <!-- <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script> -->
+</body>
+</html>
