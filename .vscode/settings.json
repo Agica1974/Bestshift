@@ -1,6 +1,6 @@
 {
     "workbench.colorCustomizations": {
-  "editor.background": "#1e1e2e",       // etwas helleres Dunkelgrau
+  "editor.background": "#5a5a5f",       // etwas helleres Dunkelgrau
   "editorCursor.foreground": "#ff0000", // Cursor z. B. rot
   "editorCursor.background": "#ffffff", // für block- oder underline-Cursor
   "editorLineHighlightBackground": "#2a2a40" // aktive Zeile leicht hervorheben

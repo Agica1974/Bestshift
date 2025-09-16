@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     closeSavedOptions.addEventListener("click", function() {
         closeSavedOptions.classList.remove("show");
-        document.getElementById('savedOptions').classList.remove('show');
+        document.getElementById('savedOptions').style.display="none";
         selectedOption = null; // Deaktiviert die OptionsMenu ***
     })
 
