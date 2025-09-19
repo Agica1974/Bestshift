@@ -27,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
            
             console.log("Optionen wurden geöffnet!");
             // // document.getElementById('savedOptions').classList.add('show'); // zeigt die Liste mit der erstellten Schichten****
-            document.getElementById('savedOptions').style.display = "flex";
+            document.getElementById('savedOptions').classList.add("show");
+            
             closeSavedOptions.classList.add("show");
 
             
@@ -74,7 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     closeSavedOptions.addEventListener("click", function() {
         closeSavedOptions.classList.remove("show");
-        document.getElementById('savedOptions').style.display="none";
+        document.getElementById('savedOptions');
+        savedOptions.classList.remove("show");
         selectedOption = null; // Deaktiviert die OptionsMenu ***
     })
 

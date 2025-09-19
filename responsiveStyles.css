@@ -194,6 +194,7 @@ button:hover {
 
 /* Wenn das Element sichtbar sein soll */
 #savedOptions.show {
+    display: flex;
     opacity: 1; /* Sichtbar */
     transform: translateY(0); /* Normalposition */
 }
