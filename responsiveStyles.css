@@ -199,6 +199,35 @@ button:hover {
     transform: translateY(0); /* Normalposition */
 }
 
+.saved-options-wrapper {
+  position: relative;     /* Referenz für absolutes Positionieren */
+  display: inline-block;  /* passt sich an */
+}
+
+
+
+.close-btn {
+  position: absolute;
+  top: -12px;     /* oberhalb */
+  right: -12px;   /* rechts daneben */
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 22px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,.2);
+}
+.close-btn:hover {
+  background: red;
+  color: #fff;
+  border-color: red;
+}
+
 #closeSavedOptions {
     position: absolute;
     top: -1.5rem;
