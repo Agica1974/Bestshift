@@ -208,7 +208,7 @@ button:hover {
 
 .close-btn {
   position: absolute;
-  top: -12px;     /* oberhalb */
+  top: -48px;     /* oberhalb */
   right: -12px;   /* rechts daneben */
   width: 24px;
   height: 24px;
