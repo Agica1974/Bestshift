@@ -90,43 +90,101 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-function renderSavedOptions() {
-    let container = document.getElementById("savedOptions");
-    container.innerHTML = "";  // Alte Optionen entfernen
+// function renderSavedOptions() {
+//     let container = document.getElementById("savedOptions");
+//     container.innerHTML = "";  // Alte Optionen entfernen
 
-    if (savedOptions.length === 0) {
-        container.innerHTML = "<p>Vorlage noch nicht erstellt!</p>";
-        return;
-    }
+//     if (savedOptions.length === 0) {
+//         container.innerHTML = "<p>Vorlage noch nicht erstellt!</p>";
+//         return;
+//     }
 
-    if (savedOptions.length > 0) {
-        // Gespeicherte Optionen anzeigen
-        savedOptions.forEach((option, index) => {
-            let optionElement = document.createElement("div");
-            optionElement.classList.add("option-item");
-            optionElement.style.backgroundColor = option.color;
-            optionElement.textContent = option.shift;
+//     if (savedOptions.length > 0) {
+//         // Gespeicherte Optionen anzeigen
+//         savedOptions.forEach((option, index) => {
+//             let optionElement = document.createElement("div");
+//             optionElement.classList.add("option-item");
+//             optionElement.style.backgroundColor = option.color;
+//             optionElement.textContent = option.shift;
 
-            // Beim Klicken wird selectedOption gesetzt
-            optionElement.addEventListener("click", () => {
-                selectedOption = option;
+//             // Beim Klicken wird selectedOption gesetzt
+//             optionElement.addEventListener("click", () => {
+//                 selectedOption = option;
 
-                // Entferne 'selected' Klasse von allen Elementen
-                document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
+//                 // Entferne 'selected' Klasse von allen Elementen
+//                 document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
                 
-                // Markiere die geklickte Option als 'selected'
-                optionElement.classList.add("selected");
-            });
+//                 // Markiere die geklickte Option als 'selected'
+//                 optionElement.classList.add("selected");
+//             });
 
-            container.appendChild(optionElement);
-        });
-    }
+//             container.appendChild(optionElement);
+//         });
+//     }
 
-    // Das Plus-Zeichen immer anzeigen
-    let addButton = document.getElementById("addNewShiftButton");
-    addButton.classList.remove("hidden"); // Sicherstellen, dass das Pluszeichen sichtbar ist
+//     // Das Plus-Zeichen immer anzeigen
+//     let addButton = document.getElementById("addNewShiftButton");
+//     addButton.classList.remove("hidden"); // Sicherstellen, dass das Pluszeichen sichtbar ist
+// }
+
+function ensureSavedOptionsWrapper() {
+  const container = document.getElementById("savedOptions");
+  if (!container) return;
+
+  // Falls noch kein Wrapper existiert → erstellen und #savedOptions hinein verschieben
+  if (!container.parentElement || container.parentElement.id !== "savedOptionsWrapper") {
+    const wrapper = document.createElement("div");
+    wrapper.id = "savedOptionsWrapper";
+    wrapper.className = "saved-options-wrapper";
+
+    // Wrapper vor den Container setzen und dann Container hinein verschieben
+    container.parentNode.insertBefore(wrapper, container);
+    wrapper.appendChild(container);
+
+    // Close-Button (einmalig erstellen)
+    const closeBtn = document.createElement("span");
+    closeBtn.id = "closeOptionsMenu";
+    closeBtn.className = "close-btn";
+    closeBtn.textContent = "×";
+    closeBtn.setAttribute("aria-label", "Schließen");
+
+    closeBtn.addEventListener("click", () => {
+      wrapper.style.display = "none"; // oder container.classList.remove("show");
+    });
+
+    wrapper.appendChild(closeBtn);
+  }
 }
 
+function renderSavedOptions() {
+  ensureSavedOptionsWrapper(); // <<— sorgt dafür, dass X immer da ist
+
+  const container = document.getElementById("savedOptions");
+  container.innerHTML = "";  // Inhalt leeren
+
+  if (savedOptions.length === 0) {
+    container.innerHTML = "<p>Vorlage noch nicht erstellt!</p>";
+  } else {
+    savedOptions.forEach((option) => {
+      const optionElement = document.createElement("div");
+      optionElement.classList.add("option-item");
+      optionElement.style.backgroundColor = option.color;
+      optionElement.textContent = option.shift;
+
+      optionElement.addEventListener("click", () => {
+        selectedOption = option;
+        document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
+        optionElement.classList.add("selected");
+      });
+
+      container.appendChild(optionElement);
+    });
+  }
+
+  // Plus immer sichtbar
+  const addButton = document.getElementById("addNewShiftButton");
+  if (addButton) addButton.classList.remove("hidden");
+}
 
 
 
