@@ -201,9 +201,12 @@ button:hover {
 
 .saved-options-wrapper {
   position: relative;     /* Referenz für absolutes Positionieren */
-  display: inline-block;  /* passt sich an */
+  display: none;  /* passt sich an */
 }
 
+.saved-options-wrapper.show {
+    display: inline-block;
+}
 
 
 .close-btn {
