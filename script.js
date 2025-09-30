@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // // document.getElementById('savedOptions').classList.add('show'); // zeigt die Liste mit der erstellten Schichten****
             document.getElementById('savedOptions').classList.add("show");
             
-            // closeSavedOptions.classList.add("show");
+            closeSavedOptions.classList.add("show");
 
             
         });
