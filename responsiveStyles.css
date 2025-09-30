@@ -143,7 +143,7 @@ button:hover {
     top: 50%;
     left: 50%;
     opacity: 0;
-    transform: translate(-50%, -60%); /* Startet etwas höher */
+    transform: translate(-50%, -150%); /* Startet etwas höher */
     width: fit-content;
     background: white;
     padding: 10px;
