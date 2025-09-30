@@ -149,7 +149,7 @@ function ensureSavedOptionsWrapper() {
     closeBtn.setAttribute("aria-label", "Schließen");
 
     closeBtn.addEventListener("click", () => {
-      wrapper.style.display = "none"; // oder container.classList.remove("show");
+      container.classList.remove("show"); 
     });
 
     wrapper.appendChild(closeBtn);
