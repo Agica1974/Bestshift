@@ -194,7 +194,17 @@ function createDayElement(day, month, year, isGray) {
   const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   el.setAttribute("data-date", dateKey);
 
-  el.addEventListener("click", () => applySelectedOption(el, dateKey));
+  // NEU: Entscheidungslogik + Event stoppen
+  el.addEventListener("click", (e) => {
+    if (selectedOption) {
+      // Schicht ist aktiv → Schicht anwenden, Termin-Modal NICHT öffnen
+      e.preventDefault();
+      e.stopPropagation();
+      applySelectedOption(el, dateKey);
+      return;
+    }
+    // Keine Schicht aktiv → hier NICHTS tun; appointment.js darf das Modal öffnen
+  });
 
   return el;
 }
@@ -202,11 +212,16 @@ function createDayElement(day, month, year, isGray) {
 function applySelectedOption(dayElement, dateKey) {
   if (!selectedOption) return;
   const shiftDisplay = dayElement.querySelector(".shift-display");
-  // NICHT den Hintergrund der ganzen Zelle färben, wenn du nur Text willst:
-  // dayElement.style.backgroundColor = selectedOption.color; // optional
-  shiftDisplay.textContent = selectedOption.shift;
+  shiftDisplay.textContent = selectedOption.shift;  // Text unter dem Datum
+  // Optional: nur den Text einfärben, nicht die ganze Zelle
+  // shiftDisplay.style.color = selectedOption.color;
+
+  // Wenn du die Zelle färben willst, entkommentieren:
+   dayElement.style.backgroundColor = selectedOption.color;
+
   saveChanges(dateKey, selectedOption.shift, selectedOption.color);
 }
+
 
 function saveChanges(dateKey, shift, color) {
   const savedChanges = JSON.parse(localStorage.getItem("savedChanges")) || {};
@@ -220,7 +235,7 @@ function restoreAllDays() {
     const dayElement = document.querySelector(`[data-date='${dateKey}']`);
     if (!dayElement) return;
     const shiftDisplay = dayElement.querySelector(".shift-display");
-    // dayElement.style.backgroundColor = savedChanges[dateKey].color; // optional
+    dayElement.style.backgroundColor = savedChanges[dateKey].color; 
     shiftDisplay.textContent = savedChanges[dateKey].shift;
   });
 }
