@@ -1,218 +1,226 @@
+/* ========== Reset & Basis ========== */
+*,
+::before,
+::after { box-sizing: border-box; }
 
-  
- * , ::before, :after {
-    box-sizing: border-box;
-  } 
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100svh;
+  margin: 0;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #222;
+}
 
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100vw;
-    margin: auto;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
-   
-} 
-
+/* ========== Kalender-Container: 3-Zeilen-Layout ========== */
 .calendar-container {
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: min(600px, 95%);
-    max-height: 100vh; /* Bildschirmhöhe  */
-    text-align: center;
-    /* margin-top: -75px; */
-    
-    overflow: hidden; /* Verhindert Scroll-Probleme */
-    
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  width: min(600px, 95%);
+  height: 100vh;
+  max-height: 100vh;
+  box-shadow: 0 4px 8px rgba(0,0,0,.2);
+  text-align: center;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* Header | Kalender | Footer */
+  gap: 8px;
+  overflow: hidden;
+  position: relative;
 }
 
 #calendar-header {
-    /* border: 1px solid blueviolet; */
-    font-size: 2rem;
-    margin-top: 0px;
+  font-size: 2rem;
+  margin: 0;
 }
 
-/* Wochentage */
+/* ========== Kalender-Grid ========== */
 .day-header {
-    display: grid;
-    align-items: last baseline;
-    height: 1.5rem;
-    /* border: #47adb5 1px solid; */
-    margin-bottom: 0;
+  display: grid;
+  align-items: last baseline;
+  height: 1.5rem;
+  margin-bottom: 0;
 }
 
 #calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: 1.5rem repeat(6, 1fr); /*Erste Zeile (Wochentage) mit fester Höhe */
-    /* height: 100%; *//* Stellt sicher, dass das Grid die volle Höhe nutzt */
-    flex-grow: 1;
-    gap: 5px;
-    margin-top: 5px;
-    /* border: 1px solid green; */
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 1.5rem repeat(6, 1fr); /* 7 Tage × 6 Wochen */
+  gap: 5px;
+  margin-top: 0;
+  min-height: 0; /* wichtig für Grid-Shrink */
 }
 
-.weekday, .day {
-    padding: 10px;
-    text-align: center;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-}
-
-.weekday {
-    font-weight: bold;
-    background-color: #ddd;
-}
-
+/* Tageszelle: Inhalt zentriert, Datum oben, Schicht darunter */
 .day {
-    background-color: #fff;
-    border: 1px solid #47adb5;
-    height: calc((100vh - 200px) / 6); /* Responvive Höhe*/
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+  background-color: #fff;
+  border: 1px solid #47adb5;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;   /* Datum + Schicht untereinander */
+  align-items: center;      /* horizontal zentriert */
+  justify-content: center;  /* vertikal zentriert in der Zelle */
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-/* Optional: Anpassungen für graue Tage */
-
-.gray-day { 
-    color: #aaa;
-    background-color: #f0f0f0;
+.day-text {
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
 }
 
+.shift-display {
+  margin-top: 4px;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  text-align: center;
+}
 
-            /*****.controls *****/
-            /* XXXXXXXXXXXXXXXX */
+.gray-day { color: #aaa; background-color: #f5f5f5; }
 
+
+
+/* ========== Buttons unten (gleich breit) ========== */
+/* normale Controls-Zeile */
 .controls {
-    display: flex;
-    flex-direction: row;
-    align-items: center;  /* Vertikale Zentrierung */
-    justify-content: space-between; /* Verteilt die Inhalte in der Leiste */
-    width: 100%; 
-    margin-top: 5px;
-    background-color: white;
-    
-    /* border: 1px solid violet;    */
+  grid-row: 3;
+  width: 100%;
+
+  /* Animations-Setup */
+  transition: opacity 180ms ease;
+  opacity: 1;
 }
 
-button {
-    justify-content: center;
-    align-items: center;
-    /* width: 6rem; */
-    width: calc((100vw - 20px) / 4);
-    height: 2.5rem;
-    padding: 0.5em 1em;
-    background-color: #47adb5;
-    border: solid 1px white;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
-    
+/* weich unsichtbar, aber Platz bleibt (Layout bleibt stabil) */
+.controls.is-hidden {
+  opacity: 0;
+  pointer-events: none;  /* nicht klickbar während versteckt */
+  /* visibility: hidden;  // optional: wenn du auch Fokus/Screenreader verstecken willst */
 }
 
-button:hover {
-    background-color: #008999;
-    color: aqua;
-    border: solid 1px aqua;
-    
-}
 
-/* Monatswechsel-Buttons*/
 .changeMonthButtons {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%; /*Maximale Breite*/
-    gap: 1.5px;
-    flex-grow: 1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5px;
+  width: 100%;
+}
+.changeMonthButtons button {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0.5em 1em;
+  background-color: #47adb5;
+  border: solid 1px #fff;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+}
+.changeMonthButtons button:hover {
+  background-color: #008999;
+  color: aqua;
+  border-color: aqua;
 }
 
-/* Optionsmenü */
-#optionsMenu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    opacity: 0;
-    transform: translate(-50%, -150%); /* Startet etwas höher */
-    width: fit-content;
-    background: white;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1000;
-   
+/* ========== Options-Modal (Schichten anlegen) ========== */
+.options-menu {
+  position: fixed;
+  top: 50%; left: 50%;
+  translate: -50% -50%;
+  width: 260px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  z-index: 1000;
+
+  /* Ausgangszustand: unsichtbar + leicht skaliert */
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+
+  transition: opacity 180ms ease, transform 180ms ease;
 }
 
-#optionsMenu.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-50%);
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+/* sichtbarer Zustand */
+.options-menu.show {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
 }
 
 
-#optionsMenu label,
-#optionsMenu input,
-#optionsMenu select,
-#optionsMenu button {
-    display: flex;
-    width: 8rem; /* Breite für Formularelemente */
-    margin: 5px 0;
-    box-sizing: border-box;
+.options-menu label { font-size: 0.9rem; }
+.options-menu input,
+.options-menu select,
+.options-menu button {
+  width: 100%;
+  height: 36px;
 }
+
+/* Close-X im Modal */
+.modal-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  text-align: center;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+/* Ausgangszustand: unsichtbar, nimmt keinen Platz */
+.saved-options-wrapper {
+  position: absolute;
+  left: 10px; right: 10px; bottom: 10px;
+  z-index: 1100;
+
+  /* Animations-Setup */
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+
+  /* smooth */
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+/* sichtbar: sanft einblenden und leicht hochsliden */
+.saved-options-wrapper.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
 
 #savedOptions {
-    
-    background: white;
-    width: min(600px, 95%);
-    border-radius: 6px;
-    display: none; /* Muss zu flex geändert werden, um es sichtbar zu machen */
-    opacity: 1;  /*Startwert: Unsichtbar*/
-    transform: translateY(-20px); /* Startwert: Etwas nach oben verschoben */
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 2px;
-    transition: transform 0.6s ease-in-out;
-    margin-top: -2.1rem;
-    margin-left: auto;
-    margin-right: auto;
-    overflow-x: scroll;
-    position: relative;
-    
+  background: #fff;
+  width: 100%;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px;
+  border: 1px solid #ccc;
+  position: relative;
 }
 
-/* Wenn das Element sichtbar sein soll */
-#savedOptions.show {
-    display: flex;
-    opacity: 1; /* Sichtbar */
-    transform: translateY(0); /* Normalposition */
-}
-
-.saved-options-wrapper {
-  position: relative;     /* Referenz für absolutes Positionieren */
-  display: none;  /* passt sich an */
-}
-
-.saved-options-wrapper.show {
-    display: inline-block;
-}
-
-
+/* Rundes Close-X */
 .close-btn {
   position: absolute;
-  top: -48px;     /* oberhalb */
-  right: -12px;   /* rechts daneben */
+  top: -14px;
+  right: -12px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -224,266 +232,130 @@ button:hover {
   text-align: center;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0,0,0,.2);
+  user-select: none;
+  z-index: 2;
 }
-.close-btn:hover {
-  background: red;
-  color: #fff;
-  border-color: red;
-}
+.close-btn:hover { background: red; color: #fff; border-color: red; }
 
-#closeSavedOptions {
-    position: absolute;
-    top: -1.5rem;
-    right: -1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #47adb5;;
-    background: white;
-    border: 1px solid#47adb5;
-    border-radius: 50%;
-    width: 1.5rem;
-    height: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    z-index: 10; /* Falls andere Elemente es überdecken */
-    transition: transform 0.9s ease-in-out;
-    transform: translateY(-20px);
-   
-}
-
-#closeSavedOptions.show {
-    opacity: 1;
-    transform: translateY(-20%);
-    
-    
-}
-
+/* Einzelne Option */
 .option-item {
-    position: relative;  /* Ermöglicht absolute Positionierung der Icons */
-    display: flex;
-    align-items: center;
-    justify-content: center;  /* Abstand zwischen Text und Icons */
-    padding: 0.5rem 1rem;
-    border: 1px solid #47adb5;
-    border-radius: 3px;
-    cursor: pointer;
-    min-width: 2rem;
-    min-height: 1.5rem;
-    background-color: white;
+  min-width: 2rem;
+  min-height: 1.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #47adb5;
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: #fff; /* überschrieben via JS */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-/* Schicht-Name linksbündig */
+.option-item.selected {
+  border: 1px solid #000 !important;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
+  font-weight: bold;
+}
 .option-name {
-    flex-grow: 0;  /*Füllt den verfügbaren Platz*/
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-/* Gemeinsames Styling für Icons */
-.edit-button, .delete-button {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-/* Bearbeiten-Icon (Bleistift) weiter links platzieren */
-.edit-button {
-    right: 30px;
-    color: #007bff;
-}
-
-/* Löschen-Icon (X) bleibt ganz rechts */
-.delete-button {
-    right: 5px;
-    color: red;
-}
-
-.edit-button:hover {
-    color: darkblue;
-}
-
-.delete-button:hover {
-    color: darkred;
-}
-
-
-
-.selected {
-    border: 1px solid black!important;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-    font-weight: bold;
-    
-    
-}
-
-                /****** MODAL FÜR TERMINE ******/
+/* ========== Appointment-Modal ========== */
+/* ========== Appointment-Modal (wie früher, relativ zum Klick) ========== */
 .modal {
-    display: none;
-    position: absolute;
-    z-index: 1001;
-    width: 25%;
-    background: white;
-    border: 1px solid black;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    transition: opacity 0.3s ease-in-out;
+  display: none;             /* per JS auf display:block setzen */
+  position: absolute;        /* relativ zum gesetzten Anker (z. B. der geklickte Tag) */
+  z-index: 1001;
+  width: 25%;
+  background: white;
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .modal::after {
-    content: "";
-    position: absolute;
-    border-style: solid;
-    border-width: 10px;
-    display: block;
+  content: "";
+  position: absolute;
+  border-style: solid;
+  border-width: 10px;
+  display: block;
 }
 
-.modal[data-arrow="top"]::after {
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-color: white transparent transparent transparent;
-    
-}
-
+/* Pfeil unten am Modal (zeigt nach unten) -> Modal steht ÜBER dem Anker */
 .modal[data-arrow="bottom"]::after {
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-color: transparent transparent white transparent;
-   
+  top: -20px;                 /* Pfeil sitzt oberhalb des Modals */
+  left: 50%;
+  transform: translateX(-50%);
+  border-color: transparent transparent white transparent;
+}
+
+/* Pfeil oben am Modal (zeigt nach oben) -> Modal steht UNTER dem Anker */
+.modal[data-arrow="top"]::after {
+  bottom: -20px;              /* Pfeil sitzt unterhalb des Modals */
+  left: 50%;
+  transform: translateX(-50%);
+  border-color: white transparent transparent transparent;
 }
 
 .modal-content {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-content input {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
+
 #closeAppointment {
-    font-size: 25px;
+  font-size: 25px;
+  cursor: pointer;
+  align-self: flex-end;
 }
 
-/* Termin-Anzeige unter einem Tag */
+/* (Optional) Terminanzeige am Tag */
 .appointment-display {
-    font-size: 12px;
-    color: #333;
-    margin-top: 4px;
+  font-size: 12px;
+  color: #333;
+  margin-top: 4px;
 }
 
-/* Schließen-Button  savedOptions*/
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 14px;
-    cursor: pointer;
-   
-}
 
 #saveAppointment {
-    width: 100%;
+  width: 100%;
+  height: 36px;
+  background: #47adb5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#saveAppointment:hover {
+  background: #008999;
+  color: aqua;
 }
 
+/* ========== Hilfsklassen ========== */
+.hidden { display: none !important; }
 
+/* ========== Responsive Anpassungen ========== */
+@media (max-width: 1180px) {
+  #calendar { gap: 3px; }
+  .calendar-container { padding: 10px; width: 95%; }
+  .option-item { font-size: 2rem; }
+}
 
-                 /****** MODAL FÜR TERMINE ENDE******/
+@media (max-width: 844px) {
+  .option-item { font-size: 0.85rem; }
+}
 
-
-
-
-/* Auf Tablets und kleinere Bildschirme (max-width: 1180px) */
-@media (max-width: 1180px) {    
-
-     #calendar {
-        grid-template-columns: repeat(7, 1fr); /* Sieben Spalten bleiben */
-        grid-template-rows: 1.5rem repeat(6, 1fr); /* Beibehaltung der festen Höhe für Wochentage */
-        gap: 3px;
-    } 
-    .calendar-container {
-        padding: 10px;
-        width: 95%; /* Maximale Breite für sehr kleine Geräte */  
-    }
-    .controls {
-        width: 100%;
-    }
-
-     .option-item {
-        font-size: 1rem;
-         /* Kleinere Schrift auf mobilen Geräten */
-    }
-    .day {
-        height: calc((100vh - 200px) / 6);
-        font-size: 1.5rem;
-    }
-    .savedOptions {
-        overflow-x: scroll;
-    }
-
-    }
-
-   @media (max-width: 844px) {
-    
-    .day {
-        
-        font-size: 1rem;
-    }
-    .option-item {
-        font-size: 0.75rem;
-         /* Kleinere Schrift auf mobilen Geräten */
-    }
-    
-   } 
-
-/* Auf sehr kleinen Geräten (max-width: 480px) */
 @media (max-width: 480px) {
-    /* .controls {
-        
-        width: 100%;
-       
-    } */
- 
-     button {
-        font-size: 0.75rem;
-        height: 2rem; 
-    } 
-
-    .calendar-container {
-        padding: 10px;
-        width: 95%; /* Maximale Breite für sehr kleine Geräte */
-       
-       
-    }
-
-    #calendar {
-        grid-template-columns: repeat(7, 1fr); /* Sieben Spalten */
-        grid-template-rows: 1.5rem repeat(6, 1fr);
-        gap: 2px;
-    }
-
-    .day {
-        height: calc((100vh - 170px) / 6);
-        font-size: 0.75rem;
-    }
-    .optionsItem {
-        font-size: 0.75rem; /* Noch kleinere Schrift */
-       
-    }
-
-    .day-header {
-        font-size: 1rem; /* Kleine Schriftgröße für die Wochentage */
-    }
-    .savedOptions {
-
-        overflow-x: scroll;
-        
-    }
+  .changeMonthButtons button { font-size: 0.9rem; height: 2.2rem; }
+  .calendar-container { height: 92vh; }
+  #calendar { gap: 2px; }
+  .day { font-size: 0.85rem; }
+  .option-item { font-size: 0.8rem; }
 }
