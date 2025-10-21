@@ -57,10 +57,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const colorInput = document.getElementById("optionColor");
     const shift = (shiftInput.value || "").trim();
     const color = colorInput.value || "#47adb5";
-    if (!shift) {
-      alert("Bitte eine Schichtbezeichnung eingeben (z. B. F / S / N).");
-      return;
-    }
+    // if (!shift) {
+    //   alert("Bitte eine Schichtbezeichnung eingeben (z. B. F / S / N).");
+    //   return;
+    // }
     savedOptions.push({ shift, color });
     localStorage.setItem("savedOptions", JSON.stringify(savedOptions));
     shiftInput.value = "";
