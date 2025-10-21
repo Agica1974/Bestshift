@@ -113,7 +113,7 @@ function renderSavedOptions() {
     });
 
     container.appendChild(item);
-    createCalendar();
+    
   });
 }
 
