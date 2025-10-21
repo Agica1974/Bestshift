@@ -353,10 +353,11 @@ body {
 }
 
 @media (max-width: 480px) {
-  .changeMonthButtons button { font-size: 0.1rem; height: 2.2rem; }
+  .changeMonthButtons button { font-size: 1rem; height: 2.2rem; }
   .calendar-container { height: 100dvh; }
   #calendar { gap: 2px; }
   .day-text{ font-size: 0.75rem; }
   .option-item { font-size: 0.75rem; }
   .shift-display {font-size: 0.75rem;}
+  .appointment-display {font-size: 0.15rem;}
 }
