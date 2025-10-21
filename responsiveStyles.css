@@ -345,7 +345,7 @@ body {
 @media (max-width: 1180px) {
   #calendar { gap: 3px; }
   .calendar-container { padding: 10px; width: 95%; }
-  .option-item { font-size: 1.5rem; }
+  .option-item { font-size: 1.25rem; }
   
   
 }
