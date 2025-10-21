@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
   optionsButton.addEventListener("click", () => {
     renderSavedOptions();
     savedOptionsWrapper.classList.add("show");   // Overlay an
-    controlsRow.classList.add("is-hidden");         // Buttons unsichtbar (lassen Platz)
+    controlsRow.classList.add("hidden");         // Buttons unsichtbar (lassen Platz)
   });
 
   // --- Overlay schließen: Overlay aus, Buttons wieder sichtbar ---
   closeSavedOptionsBtn.addEventListener("click", () => {
     savedOptionsWrapper.classList.remove("show");
-    controlsRow.classList.remove("is-hidden");
+    controlsRow.classList.remove("hidden");
     selectedOption = null;
   });
 
@@ -113,6 +113,7 @@ function renderSavedOptions() {
     });
 
     container.appendChild(item);
+    
     
   });
 }
