@@ -9,7 +9,7 @@ let savedOptions = JSON.parse(localStorage.getItem("savedOptions")) || [];
 let selectedOption = null;                // aktuell gewählte Vorlage
 let weekStartDay = parseInt(localStorage.getItem("weekStartDay")) || 0; // 0=So
 
-// damit appointment.js den Guard sehen kann:
+// Für appointment.js als Guard sichtbar machen:
 Object.defineProperty(window, "selectedOption", {
   get: () => selectedOption,
   set: (v) => { selectedOption = v; },
@@ -19,20 +19,72 @@ Object.defineProperty(window, "selectedOption", {
 // --- Farb-Strategy: 'bg' = ganze Zelle färben | 'text' = nur Schicht-Label färben
 const COLOR_MODE = 'bg';
 
+// Status-Kürzel (erweiterbar)
+const STATUS_CODES = new Set(["U", "Urlaub", "K", "Krank"]);
+const isStatusCode = (code = "") => STATUS_CODES.has(code.trim());
+
+// Helpers
 function applyColorToDay(dayEl, color) {
-  const label = dayEl.querySelector(".shift-display");
+  if (!dayEl || dayEl.classList.contains('gray-day')) return; // Randtage nicht färben
+  const label = dayEl.querySelector('.shift-display');
   if (COLOR_MODE === 'bg') {
     dayEl.style.backgroundColor = color || "";
-    label.style.color = ""; // reset evtl. alte Textfarbe
+    if (label) label.style.color = "";
   } else {
-    label.style.color = color || "";
-    dayEl.style.backgroundColor = ""; // reset evtl. alten BG
+    if (label) label.style.color = color || "";
+    dayEl.style.backgroundColor = "";
   }
 }
 
-// --- DOM Ready ---
+// Status-Leiste + Badge rendern
+function renderStatusUI(dayEl, statusCode, statusColor) {
+  const strip = dayEl.querySelector('.status-strip');
+  const badge = dayEl.querySelector('.status-badge');
+
+  if (!statusCode) {
+    if (strip) strip.style.background = 'transparent';
+    if (badge) { badge.style.display = 'none'; badge.textContent = ''; }
+    return;
+  }
+  if (strip) strip.style.background = statusColor || '#0a0';
+  if (badge) {
+    badge.textContent = statusCode[0].toUpperCase();
+    badge.style.display = 'inline-block';
+  }
+}
+
+// Tag vollständig rendern (Base + Status)
+function renderDayRecord(dayEl, rec) {
+  if (!dayEl) return;
+  const label = dayEl.querySelector(".shift-display");
+  const isGray = dayEl.classList.contains("gray-day");
+
+  // Reset
+  dayEl.style.background = "";
+  dayEl.style.backgroundColor = "";
+  if (label) { label.style.color = ""; label.textContent = ""; }
+
+  if (!rec) { renderStatusUI(dayEl, null, null); return; }
+
+  const baseShift = rec.shift || "";
+  const baseColor = rec.color || "";
+  const statusCode = rec.statusCode || "";
+  const statusColor = rec.statusColor || "";
+
+  // Base-Label
+  if (label) label.textContent = baseShift || "";
+
+  // Base-Farbe (keine 50/50, Status ist als Leiste)
+  if (!isGray && baseColor) {
+    dayEl.style.backgroundColor = baseColor;
+  }
+
+  // Status unten als Leiste + Badge
+  renderStatusUI(dayEl, statusCode, statusColor);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  // Elemente
+  // DOM
   const optionsButton          = document.getElementById("optionsButton");
   const addNewShiftButton      = document.getElementById("addNewShiftButton");
   const prevMonthBtn           = document.getElementById("prevMonth");
@@ -47,24 +99,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSavedOptionsBtn   = document.getElementById("closeSavedOptionsBtn");
   const controlsRow            = document.querySelector(".controls");
 
-  // Init
   if (weekStartSelect) weekStartSelect.value = weekStartDay;
+
   createCalendar();
   renderSavedOptions();
 
-  // Vorlagen anzeigen (Overlay ein, Buttons weich ausblenden)
+  // Vorlagen anzeigen
   optionsButton?.addEventListener("click", () => {
     renderSavedOptions();
     savedOptionsWrapper?.classList.add("show");
     controlsRow?.classList.add("is-hidden");
   });
 
-  // Overlay schließen (Overlay aus, Buttons zurück)
+  // Overlay schließen
   closeSavedOptionsBtn?.addEventListener("click", () => {
     savedOptionsWrapper?.classList.remove("show");
     controlsRow?.classList.remove("is-hidden");
-    // Auswahl optional zurücksetzen:
-    // clearSelectedOption();
   });
 
   // „+“ → Schicht-Modal öffnen
@@ -77,23 +127,22 @@ document.addEventListener("DOMContentLoaded", () => {
     optionsMenu?.classList.remove("show");
   });
 
-  // Schicht speichern
+  // Schicht speichern – leere Option jetzt ERLAUBT
   saveOptionButton?.addEventListener("click", () => {
     const shiftInput = document.getElementById("optionShift");
     const colorInput = document.getElementById("optionColor");
-    const shift = (shiftInput?.value || "").trim();
+
+    const shift = (shiftInput?.value || "").trim();      // darf leer sein
     const color = colorInput?.value || "#47adb5";
-    if (!shift) {
-      alert("Bitte eine Schichtbezeichnung eingeben (z. B. F / S / N).");
-      return;
-    }
+
     savedOptions.push({ shift, color });
     localStorage.setItem("savedOptions", JSON.stringify(savedOptions));
+
     if (shiftInput) shiftInput.value = "";
     optionsMenu?.classList.remove("show");
     renderSavedOptions();
 
-    // Optional: Overlay direkt zeigen
+    // Overlay direkt zeigen
     savedOptionsWrapper?.classList.add("show");
     controlsRow?.classList.add("is-hidden");
   });
@@ -129,11 +178,20 @@ function renderSavedOptions() {
   savedOptions.forEach((option) => {
     const item = document.createElement("div");
     item.className = "option-item";
-    item.style.backgroundColor = option.color;
+
+    const isClear = option.shift.trim() === "";
+
+    if (!isClear) {
+      item.style.backgroundColor = option.color;
+    } else {
+      // leere Option neutral darstellen
+      item.style.backgroundColor = "#fff";
+      item.style.borderStyle = "dashed";
+    }
 
     const label = document.createElement("span");
     label.className = "option-name";
-    label.textContent = option.shift;
+    label.textContent = isClear ? "Leer" : option.shift;
     item.appendChild(label);
 
     item.addEventListener("click", () => {
@@ -148,11 +206,6 @@ function setSelectedOption(option, itemEl) {
   selectedOption = option; // via window getter/setter global
   document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
   itemEl?.classList.add("selected");
-}
-
-function clearSelectedOption() {
-  selectedOption = null;
-  document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
 }
 
 /* ==============
@@ -207,6 +260,9 @@ function createCalendar() {
   }
 
   restoreAllDays();
+
+  // Termine nachziehen (aus appointment.js)
+  if (window.restoreAppointments) window.restoreAppointments();
 }
 
 function changeMonth(offset) {
@@ -221,6 +277,10 @@ function createDayElement(day, month, year, isGray) {
   el.classList.add("day");
   if (isGray) el.classList.add("gray-day");
 
+  // Reset evtl. alter Inline-Styles (bei Re-Render)
+  el.style.backgroundColor = '';
+  el.style.color = '';
+
   const dayText = document.createElement("span");
   dayText.classList.add("day-text");
   dayText.textContent = day;
@@ -230,10 +290,25 @@ function createDayElement(day, month, year, isGray) {
   shiftDisplay.classList.add("shift-display");
   el.appendChild(shiftDisplay);
 
+  // Termin-Punkte-Container
+  const dots = document.createElement("div");
+  dots.className = "appt-dots";
+  el.appendChild(dots);
+
+  // Status-Leiste + Badge
+  const strip = document.createElement("div");
+  strip.className = "status-strip";
+  el.appendChild(strip);
+
+  const badge = document.createElement("div");
+  badge.className = "status-badge";
+  badge.style.display = "none";
+  el.appendChild(badge);
+
   const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   el.setAttribute("data-date", dateKey);
 
-  // WICHTIG: Guard – wenn eine Schicht aktiv ist, NICHT das Appointment-Modal öffnen.
+  // WICHTIG: Guard – wenn eine Vorlage aktiv ist, KEIN Appointment-Modal öffnen.
   el.addEventListener("click", (e) => {
     if (selectedOption) {
       e.preventDefault();
@@ -241,7 +316,7 @@ function createDayElement(day, month, year, isGray) {
       applySelectedOption(el, dateKey);
       return;
     }
-    // Keine Schicht aktiv -> appointment.js darf reagieren und Modal öffnen
+    // sonst: appointment.js öffnet das Modal (Delegation)
   });
 
   return el;
@@ -249,16 +324,59 @@ function createDayElement(day, month, year, isGray) {
 
 function applySelectedOption(dayElement, dateKey) {
   if (!selectedOption) return;
-  const shiftDisplay = dayElement.querySelector(".shift-display");
-  shiftDisplay.textContent = selectedOption.shift;
-  applyColorToDay(dayElement, selectedOption.color);
-  saveChanges(dateKey, selectedOption.shift, selectedOption.color);
-}
 
-function saveChanges(dateKey, shift, color) {
-  const savedChanges = JSON.parse(localStorage.getItem("savedChanges")) || {};
-  savedChanges[dateKey] = { shift, color };
-  localStorage.setItem("savedChanges", JSON.stringify(savedChanges));
+  const saved = JSON.parse(localStorage.getItem("savedChanges")) || {};
+  const existing = saved[dateKey] || { shift: "", color: "" };
+
+  const selShift = (selectedOption.shift || "").trim();
+  const selColor = selectedOption.color || "";
+
+  // Leere Option = Reset der Base (Status bleibt)
+  if (selShift === "") {
+    const updated = {
+      shift: "",
+      color: "",
+      statusCode: existing.statusCode || "",
+      statusColor: existing.statusColor || ""
+    };
+    // Wenn komplett leeren gewünscht, Status auch löschen:
+    // updated.statusCode = ""; updated.statusColor = "";
+    if (!updated.shift && !updated.statusCode) {
+      delete saved[dateKey];
+      localStorage.setItem("savedChanges", JSON.stringify(saved));
+      renderDayRecord(dayElement, null);
+      return;
+    }
+    saved[dateKey] = updated;
+    localStorage.setItem("savedChanges", JSON.stringify(saved));
+    renderDayRecord(dayElement, updated);
+    return;
+  }
+
+  if (isStatusCode(selShift)) {
+    // Status setzen/ersetzen, Base behalten
+    const updated = {
+      shift: existing.shift || "",
+      color: existing.color || "",
+      statusCode: selShift,
+      statusColor: selColor || "#0a0"
+    };
+    saved[dateKey] = updated;
+    localStorage.setItem("savedChanges", JSON.stringify(saved));
+    renderDayRecord(dayElement, updated);
+    return;
+  }
+
+  // Base-Schicht neu setzen, Status unverändert lassen
+  const updated = {
+    shift: selShift,
+    color: selColor,
+    statusCode: existing.statusCode || "",
+    statusColor: existing.statusColor || ""
+  };
+  saved[dateKey] = updated;
+  localStorage.setItem("savedChanges", JSON.stringify(saved));
+  renderDayRecord(dayElement, updated);
 }
 
 function restoreAllDays() {
@@ -266,8 +384,6 @@ function restoreAllDays() {
   Object.keys(savedChanges).forEach((dateKey) => {
     const dayElement = document.querySelector(`[data-date='${dateKey}']`);
     if (!dayElement) return;
-    const shiftDisplay = dayElement.querySelector(".shift-display");
-    shiftDisplay.textContent = savedChanges[dateKey].shift;
-    applyColorToDay(dayElement, savedChanges[dateKey].color);
+    renderDayRecord(dayElement, savedChanges[dateKey]);
   });
 }
