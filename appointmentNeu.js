@@ -1,4 +1,4 @@
-// appointment.js – Punkte-Anzeige + Mehrfach-Termine + robustes Restore
+// appointment.js – Punkte-Anzeige + Mehrfach-Termine + Liste im Modal
 
 document.addEventListener("DOMContentLoaded", function () {
   setupAppointmentSystem();
@@ -49,6 +49,9 @@ function openAppointmentModal(dayElement) {
 
   // jetzt erst sichtbar
   modal.style.visibility = "visible";
+
+  // >>> NEU: vorhandene Termine im Modal listen
+  renderAppointmentsInModal(dateKey);
 
   // Speichern/Schließen-Handler (je Öffnen neu setzen ist ok)
   saveButton.onclick = function () {
@@ -119,6 +122,88 @@ function saveAppointmentsMap(map) {
   localStorage.setItem(APPT_KEY, JSON.stringify(map));
 }
 
+/* ===== Termine im Modal anzeigen ===== */
+
+// Sorgt dafür, dass es im Modal einen Bereich für die Liste gibt
+function ensureAppointmentListContainer() {
+  const modal = document.getElementById("appointmentModal");
+  if (!modal) return null;
+
+  let list = modal.querySelector("#appointmentList");
+  if (list) return list;
+
+  const content = modal.querySelector(".modal-content") || modal;
+
+  const hr = document.createElement("hr");
+  hr.style.margin = "8px 0";
+
+  const title = document.createElement("h3");
+  title.textContent = "Gespeicherte Termine";
+  title.style.margin = "6px 0";
+
+  list = document.createElement("div");
+  list.id = "appointmentList";
+  list.style.maxHeight = "180px";
+  list.style.overflow = "auto";
+  list.style.marginTop = "6px";
+
+  content.appendChild(hr);
+  content.appendChild(title);
+  content.appendChild(list);
+
+  return list;
+}
+
+// Listet alle Termine (Titel, Uhrzeit, Ort) für dateKey im Modal auf
+function renderAppointmentsInModal(dateKey) {
+  const listWrap = ensureAppointmentListContainer();
+  if (!listWrap) return;
+
+  const map = loadAppointmentsMap();
+  const items = map[dateKey] || [];
+
+  listWrap.innerHTML = "";
+
+  if (!items.length) {
+    const p = document.createElement("p");
+    p.textContent = "Keine Termine für diesen Tag.";
+    p.style.opacity = "0.8";
+    p.style.margin = "4px 0";
+    listWrap.appendChild(p);
+    return;
+  }
+
+  items.forEach(a => {
+    const row = document.createElement("div");
+    row.style.display = "grid";
+    row.style.gridTemplateColumns = "auto 1fr";
+    row.style.gap = "8px";
+    row.style.padding = "6px 0";
+    row.style.borderBottom = "1px solid #eee";
+
+    const time = document.createElement("div");
+    time.textContent = (a.start && a.end) ? `${a.start}–${a.end}` : (a.start || "");
+    time.style.fontFamily = "monospace";
+
+    const text = document.createElement("div");
+    const title = document.createElement("div");
+    title.textContent = a.title || "Termin";
+    title.style.fontWeight = "600";
+
+    const meta = document.createElement("div");
+    meta.textContent = a.location ? a.location : "";
+    meta.style.opacity = "0.8";
+    meta.style.fontSize = "0.9em";
+
+    text.appendChild(title);
+    if (meta.textContent) text.appendChild(meta);
+
+    row.appendChild(time);
+    row.appendChild(text);
+    listWrap.appendChild(row);
+  });
+}
+
 /* ==================================
    Speichern und Sicht aktualisieren
    ================================== */
@@ -128,7 +213,6 @@ function saveAppointment(dateKey) {
   const endTime   = document.getElementById("appointmentEnd").value;
   const location  = document.getElementById("appointmentLocation").value.trim();
 
-  // Du kannst hier die Pflichtfelder lockern, wenn gewünscht
   if (!title || !startTime || !endTime) {
     alert("Bitte alle Pflichtfelder ausfüllen.");
     return;
@@ -137,16 +221,16 @@ function saveAppointment(dateKey) {
   const map = loadAppointmentsMap();
   const list = map[dateKey] || [];
 
-  // neue ID (stabil)
   const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now() + Math.random());
   list.push({ id, title, start: startTime, end: endTime, location });
   map[dateKey] = list;
   saveAppointmentsMap(map);
 
   renderAppointmentDotsForDate(dateKey);
+  renderAppointmentsInModal(dateKey);          // <<< NEU
   document.getElementById("appointmentModal").style.display = "none";
 
-  // Felder optional leeren
+  // Felder resetten
   document.getElementById("appointmentTitle").value = "";
   document.getElementById("appointmentStart").value = "";
   document.getElementById("appointmentEnd").value   = "";
@@ -188,15 +272,14 @@ function renderAppointmentDotsForDayElement(dayEl, list) {
   }
 }
 
-/** Render für einen Tag anhand des dateKey (sicher, auch wenn Tag nicht sichtbar ist) */
 function renderAppointmentDotsForDate(dateKey) {
   const dayEl = document.querySelector(`[data-date='${dateKey}']`);
-  if (!dayEl) return; // anderer Monat, taucht beim nächsten Render auf
+  if (!dayEl) return; // anderer Monat
   const map = loadAppointmentsMap();
   renderAppointmentDotsForDayElement(dayEl, map[dateKey] || []);
 }
 
-/** Abwärtskompatibler Wrapper-Name (ersetzt dein altes updateCalendarDisplay) */
+// Abwärtskompatibler Name
 function updateCalendarDisplay(dateKey) {
   renderAppointmentDotsForDate(dateKey);
 }
