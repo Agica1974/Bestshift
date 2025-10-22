@@ -75,7 +75,7 @@ function renderDayRecord(dayEl, rec) {
   if (label) label.textContent = baseShift || "";
 
   // Base-Farbe (keine 50/50, Status ist als Leiste)
-  if (!isGray && baseColor) {
+  if (baseColor) {
     dayEl.style.backgroundColor = baseColor;
   }
 
