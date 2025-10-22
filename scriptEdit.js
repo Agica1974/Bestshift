@@ -330,51 +330,6 @@ function createDayElement(day, month, year, isGray) {
   return el;
 }
 
-// function applySelectedOption(dayElement, dateKey) {
-//   if (!selectedOption) return;
-
-//   const saved = JSON.parse(localStorage.getItem("savedChanges")) || {};
-//   const existing = saved[dateKey] || { shift: "", color: "" };
-
-//   const selShift = (selectedOption.shift || "").trim();
-//   const selColor = selectedOption.color || "";
-
-//   // Leere Option = Reset der Base (Status bleibt)
-//   if (selShift === "") {
-//     const updated = {
-//       shift: "",
-//       color: "",
-//       statusCode: existing.statusCode || "",
-//       statusColor: existing.statusColor || ""
-//     };
-//     // Wenn komplett leeren gewünscht, Status auch löschen:
-//     // updated.statusCode = ""; updated.statusColor = "";
-//     if (!updated.shift && !updated.statusCode) {
-//       delete saved[dateKey];
-//       localStorage.setItem("savedChanges", JSON.stringify(saved));
-//       renderDayRecord(dayElement, null);
-//       return;
-//     }
-//     saved[dateKey] = updated;
-//     localStorage.setItem("savedChanges", JSON.stringify(saved));
-//     renderDayRecord(dayElement, updated);
-//     return;
-//   }
-
-//   if (isStatusCode(selShift)) {
-//     // Status setzen/ersetzen, Base behalten
-//     const updated = {
-//       shift: existing.shift || "",
-//       color: existing.color || "",
-//       statusCode: selShift,
-//       statusColor: selColor || "#0a0"
-//     };
-//     saved[dateKey] = updated;
-//     localStorage.setItem("savedChanges", JSON.stringify(saved));
-//     renderDayRecord(dayElement, updated);
-//     return;
-//   }
-
 function applySelectedOption(dayElement, dateKey) {
   if (!selectedOption) return;
 
