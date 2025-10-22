@@ -347,8 +347,7 @@ body {
   #calendar { gap: 3px; }
   .calendar-container { padding: 10px; width: 95%; }
   .option-item { font-size: 1.25rem; }
-  .shift-display{margin-top: -2px;}
-  .appointment-display {margin-top: -8px;}
+  
   
   
 }
