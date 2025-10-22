@@ -447,17 +447,6 @@ function applySelectedOption(dayElement, dateKey) {
   renderDayRecord(dayElement, updated);
 }
 
-  // Base-Schicht neu setzen, Status unverändert lassen
-  const updated = {
-    shift: selShift,
-    color: selColor,
-    statusCode: existing.statusCode || "",
-    statusColor: existing.statusColor || ""
-  };
-  saved[dateKey] = updated;
-  localStorage.setItem("savedChanges", JSON.stringify(saved));
-  renderDayRecord(dayElement, updated);
-
 
 function restoreAllDays() {
   const savedChanges = JSON.parse(localStorage.getItem("savedChanges")) || {};
