@@ -457,7 +457,7 @@ function applySelectedOption(dayElement, dateKey) {
   saved[dateKey] = updated;
   localStorage.setItem("savedChanges", JSON.stringify(saved));
   renderDayRecord(dayElement, updated);
-}
+
 
 function restoreAllDays() {
   const savedChanges = JSON.parse(localStorage.getItem("savedChanges")) || {};
