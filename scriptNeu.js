@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (weekStartSelect) weekStartSelect.value = weekStartDay;
 
-  seedDefaults();
+  
   createCalendar();
   renderSavedOptions();
 
@@ -414,6 +414,7 @@ function restoreAllDays() {
     renderDayRecord(dayElement, savedChanges[dateKey]);
   });
 }
+
 
 
 
