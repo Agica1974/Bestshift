@@ -328,16 +328,16 @@ body {
 }
 
 /* Überschrift */
-#appointmentModal .modal-content h2 {
-  margin: 0 0 8px 0;
+/* #appointmentModal .modal-content h2 {
+  margin: 0 0 0px 0;
   font-size: 1.1rem;
-}
+} */
 
 /* Schließen-X rechts oben (dein bestehender Button) */
 #appointmentModal .modal-content #closeAppointment {
   position: absolute;
-  top: 8px;
-  right: 10px;
+  top: 3px;
+  right: 3px;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
