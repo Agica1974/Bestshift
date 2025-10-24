@@ -303,85 +303,163 @@ body {
   text-overflow: ellipsis;
 }
 
-/* ========== Appointment-Modal ========== */
-/* ========== Appointment-Modal (wie früher, relativ zum Klick) ========== */
-.modal {
-  display: none;             /* per JS auf display:block setzen */
-  position: absolute;        /* relativ zum gesetzten Anker (z. B. der geklickte Tag) */
-  z-index: 1001;
-  max-width: 350px;
-  width: 50%;
-  background: white;
-  border: 1px solid black;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  transition: opacity 0.3s ease-in-out;
+/* =========================
+   Modal (Popover) Grundstil
+   ========================= */
+#appointmentModal.modal {
+  position: absolute;     /* vom JS absolut zum Tag positioniert */
+  display: none;          /* JS setzt display:block beim Öffnen */
+  z-index: 2000;          /* über allem */
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  padding: 0;             /* Inhalt macht den Innenabstand */
+  max-width: 92vw;        /* mobil-sicher */
+  color: #111;
 }
 
-.modal::after {
+/* Inhalt innen */
+#appointmentModal .modal-content {
+  display: block;
+  padding: 12px 14px;
+  min-width: 280px;       /* angenehme Mindestbreite */
+  box-sizing: border-box;
+}
+
+/* Überschrift */
+#appointmentModal .modal-content h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+}
+
+/* Schließen-X rechts oben (dein bestehender Button) */
+#appointmentModal .modal-content #closeAppointment {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+/* Pfeil unter/über dem Popover */
+
+#appointmentModal.modal::after {
   content: "";
   position: absolute;
   border-style: solid;
   border-width: 10px;
   display: block;
-}
-
-/* Pfeil unten am Modal (zeigt nach unten) -> Modal steht ÜBER dem Anker */
-.modal[data-arrow="bottom"]::after {
-  top: -20px;                 /* Pfeil sitzt oberhalb des Modals */
-  left: 50%;
+  left: var(--arrow-x, 50%);      /* <- hier steckt die exakte X-Position */
   transform: translateX(-50%);
-  border-color: transparent transparent white transparent;
+}
+#appointmentModal.modal::after { left: var(--arrow-x, 50%); transform: translateX(-50%); }
+
+
+#appointmentModal.modal[data-arrow="bottom"]::after {
+  top: -20px;
+  border-color: transparent transparent #fff transparent;
+  filter: drop-shadow(0 -1px 1px rgba(0,0,0,.12));
 }
 
-/* Pfeil oben am Modal (zeigt nach oben) -> Modal steht UNTER dem Anker */
-.modal[data-arrow="top"]::after {
-  bottom: -20px;              /* Pfeil sitzt unterhalb des Modals */
-  left: 50%;
-  transform: translateX(-50%);
-  border-color: white transparent transparent transparent;
-}
-
-.modal-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-content input {
-  margin-bottom: 10px;
-}
-
-#closeAppointment {
-  font-size: 25px;
-  cursor: pointer;
-  align-self: flex-end;
-}
-
-/* (Optional) Terminanzeige am Tag */
-.appointment-display {
-  font-size: 12px;
-  color: #333;
-  margin-top: 4px;
+#appointmentModal.modal[data-arrow="top"]::after {
+  bottom: -20px;
+  border-color: #fff transparent transparent transparent;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.12));
 }
 
 
-#saveAppointment {
+/* =========================
+   Ansicht/Form umschalten
+   ========================= */
+.is-hidden { display: none !important; }
+
+/* Formular-Wrapper, den das JS erzeugt */
+#appointmentModal .appt-form {
+  margin-top: 10px;
+  display: block;
+}
+#appointmentModal .appt-form label {
+  display: block;
+  margin: 6px 0 2px;
+  font-size: 0.9rem;
+}
+#appointmentModal .appt-form input,
+#appointmentModal .appt-form select {
   width: 100%;
-  height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+#appointmentModal .appt-form #saveAppointment {
+  margin-top: 10px;
+  width: 100%;
   background: #47adb5;
   color: #fff;
-  border: none;
-  border-radius: 6px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
   cursor: pointer;
 }
-#saveAppointment:hover {
+#appointmentModal .appt-form #saveAppointment:hover {
   background: #008999;
-  color: aqua;
 }
 
-/* ========== Hilfsklassen ========== */
-.hidden { display: none !important; }
+/* =========================
+   Quick-Actions / Liste oben
+   ========================= */
+#appointmentView button {
+  background: #eee;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#appointmentView button:hover { background: #e6e6e6; }
+
+/* Kartenlook der Zusammenfassung (wird inline gestylt, das hier ergänzt nur) */
+#appointmentView .summary-card {
+  border-radius: 10px;
+}
+
+/* =========================
+   Punkte in der Tageszelle
+   ========================= */
+.day { position: relative; } /* wichtig für absolute Kinder */
+.appt-dots {
+  position: absolute;
+  top: 6px; right: 6px;
+  display: flex; gap: 4px;
+  align-items: center;
+  pointer-events: none;
+}
+.appt-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #444;
+  opacity: 0.85;
+}
+.appt-plus { font-size: 0.75rem; opacity: 0.85; }
+
+/* Status-Streifen / Badge (falls genutzt) */
+.status-strip {
+  position: absolute;
+  left: 4px; right: 4px; bottom: 4px;
+  height: 6px; border-radius: 3px;
+  background: transparent; pointer-events: none;
+}
+.status-badge {
+  position: absolute;
+  bottom: 12px; left: 6px;
+  font-size: 0.65rem; line-height: 1;
+  padding: 2px 4px; border-radius: 4px;
+  color: #fff; background: rgba(0,0,0,.4);
+  pointer-events: none;
+}
+
 
 /* ========== Responsive Anpassungen ========== */
 @media (max-width: 1180px) {
