@@ -441,7 +441,7 @@ function restoreAllDays() {
 // Default-Vorlagen + Wochenstart in localStorage schreiben
 function seedDefaults({ overwrite = false } = {}) {
   const defaults = [
-    { shift: "F",  color: "#ffffb5" },
+    { shift: "F",  color: "rgba(255, 255, 0, 1)" },
     { shift: "S",  color: "#ff9900" },
     { shift: "N",  color: "#00ccff" },
     { shift: "U",  color: "#92d050" },
