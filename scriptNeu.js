@@ -83,6 +83,28 @@ function renderDayRecord(dayEl, rec) {
   renderStatusUI(dayEl, statusCode, statusColor);
 }
 
+
+/* ====================================================================
+   SeedDafaults() wird aufgerufen um die Schicht- Optionen zu erstellen
+   ==================================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 1) Defaults einmalig setzen (ohne UI)
+  seedDefaults(); // oder seedDefaults({ overwrite:true }) zum Reset in der Entwicklung
+
+  // 2) Globale Variablen aus Storage laden
+  try { window.weekStartDay = parseInt(localStorage.getItem("weekStartDay"), 10) || 0; } catch {}
+
+  // 3) UI aufbauen (einmalig)
+  if (typeof renderSavedOptions === "function") renderSavedOptions();
+  if (typeof createCalendar === "function") createCalendar();
+
+  // 4) ggf. weitere Inits
+  if (typeof restoreAppointments === "function") restoreAppointments();
+});
+
+// =====================================================================
+
 document.addEventListener("DOMContentLoaded", () => {
   // DOM
   const optionsButton          = document.getElementById("optionsButton");
@@ -272,7 +294,8 @@ function createCalendar() {
 
   // Termine nachziehen (aus appointment.js)
   if (window.restoreAppointments) window.restoreAppointments();
-  seedDefaults();
+  
+
 
 }
 
@@ -414,6 +437,37 @@ function restoreAllDays() {
     renderDayRecord(dayElement, savedChanges[dateKey]);
   });
 }
+
+// Default-Vorlagen + Wochenstart in localStorage schreiben
+function seedDefaults({ overwrite = false } = {}) {
+  const defaults = [
+    { shift: "F",  color: "#ffffb5" },
+    { shift: "S",  color: "#ff9900" },
+    { shift: "N",  color: "#00ccff" },
+    { shift: "U",  color: "#92d050" },
+    { shift: "K",  color: "#ff0000" },
+    { shift: "",   color: "#ffffff" }, // Leer-Option
+    { shift: "WE", color: "#ffffff" },
+    { shift: "Frei", color: "#ffffff" },
+  ];
+  const weekStart = 1; // Montag
+
+  if (overwrite || !localStorage.getItem("savedOptions")) {
+    localStorage.setItem("savedOptions", JSON.stringify(defaults));
+  }
+  if (overwrite || localStorage.getItem("weekStartDay") === null) {
+    localStorage.setItem("weekStartDay", String(weekStart));
+  }
+
+  // Falls vorhanden: UI sofort aktualisieren
+  if (typeof renderSavedOptions === "function") renderSavedOptions();
+  if (typeof createCalendar === "function") {
+    // globale weekStartDay ggf. neu setzen
+    try { window.weekStartDay = parseInt(localStorage.getItem("weekStartDay"), 10) || 0; } catch {}
+    createCalendar();
+  }
+}
+
 
 
 
