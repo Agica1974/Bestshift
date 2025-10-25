@@ -322,7 +322,7 @@ body {
 /* Inhalt innen */
 #appointmentModal .modal-content {
   display: block;
-  padding: 12px 14px;
+  padding: 12px;
   min-width: 280px;       /* angenehme Mindestbreite */
   box-sizing: border-box;
 }
