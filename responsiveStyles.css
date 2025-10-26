@@ -322,7 +322,7 @@ body {
 /* Inhalt innen */
 #appointmentModal .modal-content {
   display: block;
-  padding: 12px 12px 1px;
+  padding: 12px 12px 8px;
   min-width: 280px;       /* angenehme Mindestbreite */
   box-sizing: border-box;
 }
@@ -332,6 +332,26 @@ body {
   margin: 0 0 0px 0;
   font-size: 1.1rem;
 } */
+
+#appointmentModal .shift-banner {
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding: 6px 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+
+#appointmentModal .shift-banner.empty {
+  background-color: #e0e0e0;
+  color: #666;
+}
 
 /* Schließen-X rechts oben (dein bestehender Button) */
 #appointmentModal .modal-content #closeAppointment {
