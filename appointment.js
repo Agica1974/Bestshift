@@ -36,28 +36,7 @@ function setupAppointmentSystem() {
 /* ========================================================
    Hilfsfunktionen für den Modal Anzeige(Schicht und Farbe)
    ======================================================== */
-  function getShiftInfoForDate(dateKey) {
-  const dayEl = document.querySelector(`[data-date='${dateKey}']`);
-  if (!dayEl) return { shift: null, color: null };
-  const shiftText = dayEl.querySelector(".shift-display")?.textContent?.trim() || null;
-  const bgColor = dayEl.style.backgroundColor || null;
-  return { shift: shiftText, color: bgColor };
-}
-
-function getOrCreateShiftBanner(modal) {
-  let el = modal.querySelector(".shift-banner");
-  if (!el) {
-    el = document.createElement("div");
-    el.className = "shift-banner";
-    const modalContent = modal.querySelector(".modal-content");
-    // 👉 Banner ganz oben einfügen (als erstes Element)
-    modalContent.insertBefore(el, modalContent.firstChild);
-  }
-  return el;
-}
-
-
-// Kürzel → Volltext
+  // Kürzel → Volltext
 function getShiftFullText(short) {
   switch (short) {
     case "F": return "Frühschicht";
@@ -70,7 +49,6 @@ function getShiftFullText(short) {
     default: return "";
   }
 }
-
 // Kürzel → Icon
 function getShiftIcon(short) {
   switch (short) {
@@ -85,6 +63,37 @@ function getShiftIcon(short) {
   }
 }
 
+// Info vom Tag lesen
+function getShiftInfoForDate(dateKey) {
+  const dayEl = document.querySelector(`[data-date='${dateKey}']`);
+  if (!dayEl) return { shift: null, color: null };
+  const shiftText = dayEl.querySelector(".shift-display")?.textContent?.trim() || null;
+  const bgColor = dayEl.style.backgroundColor || null;
+  return { shift: shiftText, color: bgColor };
+}
+
+// Banner erzeugen (einmal) – wird später UNTER den View gehängt
+function getOrCreateShiftBanner(modal) {
+  let el = modal.querySelector(".shift-banner");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "shift-banner";
+  }
+  return el;
+}
+
+// Banner UNTER den #appointmentView setzen
+function placeShiftBannerBelowView(modal, bannerEl) {
+  const content = modal.querySelector(".modal-content") || modal;
+  const view = content.querySelector("#appointmentView");
+  if (!view) return;
+  if (bannerEl.parentElement !== content || bannerEl.previousElementSibling !== view) {
+    // hinter (nach) dem View einfügen
+    view.insertAdjacentElement("afterend", bannerEl);
+  }
+}
+
+
 /* ======================
    Modal öffnen/schließen
    ====================== */
@@ -98,37 +107,37 @@ function getShiftIcon(short) {
 
   modal.removeAttribute('data-editing-id');
 
-  // 🟡 Schichtanzeige sofort einfügen (immer ganz oben)
-  const { shift, color } = getShiftInfoForDate(dateKey);
-  const icon = getShiftIcon(shift);
-  const fullText = getShiftFullText(shift);
-  const shiftBanner = getOrCreateShiftBanner(modal);
-
-  shiftBanner.textContent = shift
-    ? `${icon}  ${shift} – ${fullText}`
-    : `${icon}  Keine Schicht`;
-  shiftBanner.style.backgroundColor = color || "#e0e0e0";
-  shiftBanner.style.color = shift ? "#000" : "#666";
-  shiftBanner.classList.toggle("empty", !shift);
-
-  // 🔥 Modal sichtbar machen, korrekt positionieren
+  // sichtbar machen & positionieren
   modal.style.display = "block";
   modal.style.visibility = "hidden";
   positionModalCorrectly(dayElement, modal);
   modal.style.visibility = "visible";
-
   modal.dataset.anchor = dateKey;
 
-  // 👇 Modal-Ansicht aufbauen
+  // View aufbauen (Liste/Buttons im View)
   const view = clearModalView(modal);
   hideForm();
 
   const map = loadAppointmentsMap();
   const hasItems = (map[dateKey] || []).length > 0;
   if (hasItems) renderSummaryList(view, dateKey);
-
   renderQuickActions(view, dateKey);
 
+  // Banner text + farbe
+  const { shift, color } = getShiftInfoForDate(dateKey);
+  const icon     = getShiftIcon(shift);
+  const fullText = getShiftFullText(shift);
+  const banner   = getOrCreateShiftBanner(modal);
+
+  banner.textContent = shift ? `${icon}  ${shift} – ${fullText}` : `${icon}  Keine Schicht`;
+  banner.style.backgroundColor = color || "#e0e0e0";
+  banner.style.color = shift ? "#000" : "#666";
+  banner.classList.toggle("empty", !shift);
+
+  // 👉 Banner UNTER den View hängen (passt zu beiden Zuständen)
+  placeShiftBannerBelowView(modal, banner);
+
+  // Save/Close
   saveButton.onclick = function () {
     const editing = modal.dataset.editingId || null;
     saveAppointment(dateKey, editing || null);
@@ -139,6 +148,58 @@ function getShiftIcon(short) {
     modal.removeAttribute('data-anchor');
   };
 }
+
+
+//    function openAppointmentModal(dayElement) {
+//   const modal       = document.getElementById("appointmentModal");
+//   const saveButton  = document.getElementById("saveAppointment");
+//   const closeButton = document.getElementById("closeAppointment");
+//   const dateKey     = dayElement.getAttribute("data-date");
+//   if (!modal || !dateKey) return;
+
+//   modal.removeAttribute('data-editing-id');
+
+//   // 🟡 Schichtanzeige sofort einfügen (immer ganz oben)
+//   const { shift, color } = getShiftInfoForDate(dateKey);
+//   const icon = getShiftIcon(shift);
+//   const fullText = getShiftFullText(shift);
+//   const shiftBanner = getOrCreateShiftBanner(modal);
+
+//   shiftBanner.textContent = shift
+//     ? `${icon}  ${shift} – ${fullText}`
+//     : `${icon}  Keine Schicht`;
+//   shiftBanner.style.backgroundColor = color || "#e0e0e0";
+//   shiftBanner.style.color = shift ? "#000" : "#666";
+//   shiftBanner.classList.toggle("empty", !shift);
+
+//   // 🔥 Modal sichtbar machen, korrekt positionieren
+//   modal.style.display = "block";
+//   modal.style.visibility = "hidden";
+//   positionModalCorrectly(dayElement, modal);
+//   modal.style.visibility = "visible";
+
+//   modal.dataset.anchor = dateKey;
+
+//   // 👇 Modal-Ansicht aufbauen
+//   const view = clearModalView(modal);
+//   hideForm();
+
+//   const map = loadAppointmentsMap();
+//   const hasItems = (map[dateKey] || []).length > 0;
+//   if (hasItems) renderSummaryList(view, dateKey);
+
+//   renderQuickActions(view, dateKey);
+
+//   saveButton.onclick = function () {
+//     const editing = modal.dataset.editingId || null;
+//     saveAppointment(dateKey, editing || null);
+//   };
+//   closeButton.onclick = function () {
+//     modal.style.display = "none";
+//     modal.removeAttribute('data-editing-id');
+//     modal.removeAttribute('data-anchor');
+//   };
+// }
 
 
 
@@ -303,21 +364,15 @@ function showForm() {
 }
 
 // Quick-Actions: + Schicht | + Termin
+
 function renderQuickActions(viewEl, dateKey) {
   const row = document.createElement("div");
-  row.style.display = "grid";
-  row.style.gridTemplateColumns = "1fr 1px 1fr";
-  row.style.alignItems = "center";
-  row.style.gap = "12px";
-  row.style.padding = "8px 0";
-  row.style.marginTop = "6px";
+  row.className = "qa-row";
 
   const addShift = document.createElement("button");
-  addShift.textContent = "+  Schicht";
-  addShift.style.padding = "8px 10px";
-  addShift.style.borderRadius = "6px";
+  addShift.className = "qa-btn";
+  addShift.textContent = "+ Schicht";
   addShift.onclick = () => {
-    // Popover schließen, Vorlagen-Overlay öffnen
     document.getElementById("appointmentModal").style.display = "none";
     const wrapper = document.getElementById("savedOptionsWrapper");
     const controlsRow = document.querySelector(".controls");
@@ -326,24 +381,60 @@ function renderQuickActions(viewEl, dateKey) {
   };
 
   const divider = document.createElement("div");
-  divider.style.height = "100%";
-  divider.style.background = "#ddd";
-  divider.style.width = "1px";
-  divider.style.justifySelf = "center";
+  divider.className = "qa-div";
 
   const addAppt = document.createElement("button");
-  addAppt.textContent = "+  Termin";
-  addAppt.style.padding = "8px 10px";
-  addAppt.style.borderRadius = "6px";
-  addAppt.onclick = () => {
-    showAppointmentForm(dateKey); // Formular einblenden
-  };
+  addAppt.className = "qa-btn";
+  addAppt.textContent = "+ Termin";
+  addAppt.onclick = () => { showAppointmentForm(dateKey); };
 
   row.appendChild(addShift);
   row.appendChild(divider);
   row.appendChild(addAppt);
   viewEl.appendChild(row);
 }
+
+// function renderQuickActions(viewEl, dateKey) {
+//   const row = document.createElement("div");
+//   row.style.display = "grid";
+//   row.style.gridTemplateColumns = "1fr 1px 1fr";
+//   row.style.alignItems = "center";
+//   row.style.gap = "12px";
+//   row.style.padding = "8px 0";
+//   row.style.marginTop = "6px";
+
+//   const addShift = document.createElement("button");
+//   addShift.textContent = "+  Schicht";
+//   addShift.style.padding = "8px 10px";
+//   addShift.style.borderRadius = "6px";
+//   addShift.onclick = () => {
+//     // Popover schließen, Vorlagen-Overlay öffnen
+//     document.getElementById("appointmentModal").style.display = "none";
+//     const wrapper = document.getElementById("savedOptionsWrapper");
+//     const controlsRow = document.querySelector(".controls");
+//     if (wrapper) wrapper.classList.add("show");
+//     if (controlsRow) controlsRow.classList.add("is-hidden");
+//   };
+
+//   const divider = document.createElement("div");
+//   divider.style.height = "100%";
+//   divider.style.background = "#ddd";
+//   divider.style.width = "1px";
+//   divider.style.justifySelf = "center";
+
+//   const addAppt = document.createElement("button");
+//   addAppt.textContent = "+  Termin";
+//   addAppt.style.padding = "8px 10px";
+//   addAppt.style.borderRadius = "6px";
+//   addAppt.onclick = () => {
+//     showAppointmentForm(dateKey); // Formular einblenden
+//   };
+
+//   row.appendChild(addShift);
+//   row.appendChild(divider);
+//   row.appendChild(addAppt);
+//   viewEl.appendChild(row);
+// }
 
 
 // Zusammenfassungsliste (oben): Titel, Zeit, Dauer, Ort + Edit/Löschen

@@ -444,6 +444,88 @@ body {
 #appointmentView .summary-card {
   border-radius: 10px;
 }
+/* Quick-Action Karten */
+#appointmentView .qa-row {
+  display: grid;
+  grid-template-columns: 1fr 12px 1fr;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#appointmentView .qa-btn {
+  padding: 10px 12px;
+  background: #f4f4f6;
+  border: 2px solid #e2e2e6;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 600;
+  color: #3a66c1;
+}
+#appointmentView .qa-div { width: 2px; height: 100%; background: #ddd; border-radius: 1px; }
+
+/* Banner-Pill unten */
+#appointmentModal .shift-banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  padding: 10px 14px;
+  border-radius: 16px;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  transition: background-color .25s ease;
+}
+#appointmentModal .shift-banner.empty { background: #e0e0e0; color: #666; }
+
+/* Termin-Item – läuft nicht aus */
+#appointmentModal .appt-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "title actions"
+    "meta  actions";
+  align-items: center;
+  gap: 6px 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #f4f4f6;
+  border-radius: 16px;
+  overflow: hidden;
+}
+#appointmentModal .appt-title { grid-area: title; font-weight: 800; font-size: 1.15rem; }
+#appointmentModal .appt-meta  { grid-area: meta;  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #333; display:flex; gap:12px; flex-wrap:wrap; }
+#appointmentModal .appt-actions { grid-area: actions; display:flex; gap:8px; justify-self:end; }
+
+#appointmentModal .appt-title, #appointmentModal .appt-meta { min-width:0; word-break:break-word; }
+
+/* kompaktere Modal-Paddings */
+#appointmentModal .modal-content { padding: 10px 12px 8px; }
+
+/* Buttons im Modal kompakt, ohne globales Button-Layout */
+#appointmentModal .modal-content button { padding: 6px 10px; border-radius: 10px; height:auto; }
+
+/* Center-Modus fürs Formular (hatten wir) */
+#appointmentModal.is-centered {
+  position: fixed !important;
+  top: 50% !important; left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(92vw, 420px) !important;
+  max-height: 88vh; overflow: auto;
+}
+#appointmentModal.is-centered::after { display: none !important; }
+
+/* iOS: kein Auto-Zoom */
+#appointmentModal .appt-form input,
+#appointmentModal .appt-form select,
+#appointmentModal .appt-form button {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
 
 /* =========================
    Punkte in der Tageszelle
