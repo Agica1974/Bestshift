@@ -343,6 +343,7 @@ body {
   background: transparent;
   border: 0;
 }
+#appointmentModal .modal-content #closeAppointment:hover {background: red; color: #fff; border-color: red;}
 
 /* Pfeil */
 #appointmentModal.modal::after {
@@ -466,10 +467,12 @@ body {
   position: fixed !important;
   top: 50% !important; left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  width: min(92vw, 420px) !important;
-  max-height: 88vh; overflow: auto;
+  width: min(92vw, 550px) !important;  /* darfst hier breiter wählen */
+  max-height: 88vh;
+  overflow: auto;                      /* falls es *wirklich* zu viel Inhalt wird */
 }
 #appointmentModal.is-centered::after { display: none !important; }
+
 
 /* iOS: kein Auto-Zoom */
 #appointmentModal .appt-form input,
