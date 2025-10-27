@@ -140,48 +140,7 @@ function getShiftIcon(short) {
   };
 }
 
-// function openAppointmentModal(dayElement) {
-//   const modal       = document.getElementById("appointmentModal");
-//   const saveButton  = document.getElementById("saveAppointment");
-//   const closeButton = document.getElementById("closeAppointment");
-//   const dateKey     = dayElement.getAttribute("data-date");
-//   if (!modal || !dateKey) return;
 
-//   // Editing-Flag zurücksetzen
-//   modal.removeAttribute('data-editing-id');
-
-//   // sichtbar machen, kurz unsichtbar für korrekte Maße
-//   modal.style.display = "block";
-//   modal.style.visibility = "hidden";
-//   positionModalCorrectly(dayElement, modal);
-//   modal.style.visibility = "visible";
-
-//   // >> wichtig für Repositionierung bei Resize/Scroll
-//   modal.dataset.anchor = dateKey;
-
-//   // Ansicht (oben) bauen, Formular ausblenden
-//   const view = clearModalView(modal);
-//   hideForm(); // erst mal nur kompakte Ansicht zeigen
-
-//   // 1) ggf. Zusammenfassung vorhandener Termine
-//   const map = loadAppointmentsMap();
-//   const hasItems = (map[dateKey] || []).length > 0;
-//   if (hasItems) renderSummaryList(view, dateKey);
-
-//   // 2) Quick-Aktionen
-//   renderQuickActions(view, dateKey);
-
-//   // Save/Close-Handler (pro Öffnen neu setzen)
-//   saveButton.onclick = function () {
-//     const editing = modal.dataset.editingId || null;
-//     saveAppointment(dateKey, editing || null);
-//   };
-//   closeButton.onclick = function () {
-//     modal.style.display = "none";
-//     modal.removeAttribute('data-editing-id');
-//     modal.removeAttribute('data-anchor');
-//   };
-// }
 
 function positionModalCorrectly(dayElement, modal) {
   const rect = dayElement.getBoundingClientRect();

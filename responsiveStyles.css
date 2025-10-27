@@ -19,7 +19,7 @@ body {
   background: #fff;
   padding: 10px;
   border-radius: 10px;
-  width: min(600px, 95%);
+  width: min(600px, 100%);
   height: 100vh;
   max-height: 100vh;
   box-shadow: 0 4px 8px rgba(0,0,0,.2);
@@ -484,7 +484,7 @@ body {
 /* ========== Responsive Anpassungen ========== */
 @media (max-width: 1180px) {
   #calendar { gap: 3px; }
-  .calendar-container { padding: 10px; width: 95%; }
+  .calendar-container { padding: 10px; width: 100%; }
   .option-item { font-size: 1.25rem; }
   
   
