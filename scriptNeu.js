@@ -8,6 +8,8 @@ let currentMonth = new Date().getMonth();
 let savedOptions = JSON.parse(localStorage.getItem("savedOptions")) || [];
 let selectedOption = null;                // aktuell gewählte Vorlage
 let weekStartDay = parseInt(localStorage.getItem("weekStartDay")) || 0; // 0=So
+let deleteShiftMode = false;
+
 
 // Für appointment.js als Guard sichtbar machen:
 Object.defineProperty(window, "selectedOption", {
@@ -206,31 +208,60 @@ function renderSavedOptions() {
     return;
   }
 
-  savedOptions.forEach((option) => {
-    const item = document.createElement("div");
-    item.className = "option-item";
+  savedOptions.forEach((option, index) => {
+  const optionElement = document.createElement("div");
+  optionElement.classList.add("option-item");
+  optionElement.style.backgroundColor = option.color;
+  optionElement.textContent = option.shift;
 
-    const isClear = option.shift.trim() === "";
-
-    if (!isClear) {
-      item.style.backgroundColor = option.color;
-    } else {
-      // leere Option neutral darstellen
-      item.style.backgroundColor = "#fff";
-      item.style.borderStyle = "dashed";
-    }
-
-    const label = document.createElement("span");
-    label.className = "option-name";
-    label.textContent = isClear ? "Leer" : option.shift;
-    item.appendChild(label);
-
-    item.addEventListener("click", () => {
-      setSelectedOption(option, item);
-    });
-
-    container.appendChild(item);
+  // Auswahl-Click
+  optionElement.addEventListener("click", () => {
+    selectedOption = option;
+    document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
+    optionElement.classList.add("selected");
   });
+
+  // --- NEU: Delete-Badge (nur sichtbar im Löschmodus via CSS) ---
+  const del = document.createElement("span");
+  del.className = "opt-del";
+  del.textContent = "×";
+  del.title = "Schicht löschen";
+  del.addEventListener("click", (ev) => {
+    ev.stopPropagation(); // verhindert Auswahl-Click
+    deleteOptionAt(index);
+  });
+  optionElement.appendChild(del);
+  // --------------------------------------------------------------
+
+  container.appendChild(optionElement);
+});
+
+
+  // savedOptions.forEach((option) => {
+  //   const item = document.createElement("div");
+  //   item.className = "option-item";
+
+  //   const isClear = option.shift.trim() === "";
+
+  //   if (!isClear) {
+  //     item.style.backgroundColor = option.color;
+  //   } else {
+  //     // leere Option neutral darstellen
+  //     item.style.backgroundColor = "#fff";
+  //     item.style.borderStyle = "dashed";
+  //   }
+
+  //   const label = document.createElement("span");
+  //   label.className = "option-name";
+  //   label.textContent = isClear ? "Leer" : option.shift;
+  //   item.appendChild(label);
+
+  //   item.addEventListener("click", () => {
+  //     setSelectedOption(option, item);
+  //   });
+
+  //   container.appendChild(item);
+  // });
 }
 
 function setSelectedOption(option, itemEl) {
@@ -238,6 +269,40 @@ function setSelectedOption(option, itemEl) {
   document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
   itemEl?.classList.add("selected");
 }
+
+/* ==========================
+   savedOptions löschen-Logik
+   ========================== */
+const deleteBtn = document.getElementById("deleteShiftModeButton");
+if (deleteBtn) {
+  deleteBtn.addEventListener("click", () => {
+    deleteShiftMode = !deleteShiftMode;
+    // visueller Zustand am Wrapper umschalten
+    document.getElementById("savedOptionsWrapper")?.classList.toggle("delete-mode", deleteShiftMode);
+    // Button-Style (optional)
+    deleteBtn.classList.toggle("active", deleteShiftMode);
+  });
+}
+
+function deleteOptionAt(index) {
+  if (index < 0 || index >= savedOptions.length) return;
+  const opt = savedOptions[index];
+  const label = (opt.shift || "(leer)") + " " + (opt.color || "");
+  if (!confirm(`Schicht "${label}" löschen?`)) return;
+
+  // Falls gerade selektiert: Auswahl zurücksetzen
+  if (selectedOption === savedOptions[index]) {
+    selectedOption = null;
+  }
+
+  // Eintrag entfernen & speichern
+  savedOptions.splice(index, 1);
+  localStorage.setItem("savedOptions", JSON.stringify(savedOptions));
+
+  // Neu rendern
+  renderSavedOptions();
+}
+
 
 /* ==============
    Kalender-Logik

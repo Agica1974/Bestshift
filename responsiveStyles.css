@@ -248,10 +248,12 @@ body {
   display: flex;
   flex-direction: row;
   gap: 6px;
-  overflow-x: auto;
   padding: 8px;
   border: 1px solid #ccc;
   position: relative;
+   overflow-x: auto; /* Saved Options: horizontales Scrollen & schönes Snap */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
 .close-btn {
@@ -286,6 +288,11 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+#savedOptions .option-item {
+  scroll-snap-align: start;
+}
+
 .option-item.selected {
   border: 1px solid #000 !important;
   box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
@@ -297,6 +304,38 @@ body {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+
+/* Löschmodus: kleine rote X-Badges oben rechts auf den Kacheln */
+#savedOptions .opt-del {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #ff3b30;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  border: 1px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+  cursor: pointer;
+  display: none; /* standard aus */
+}
+
+/* Im Löschmodus anzeigen */
+.saved-options-wrapper.delete-mode .opt-del { display: inline-block; }
+
+/* Option-Items müssen relativ sein für opt-del Positionierung */
+#savedOptions .option-item { position: relative; }
+
+/* Optional: schmalere Scrollbar */
+#savedOptions::-webkit-scrollbar { height: 8px; }
+#savedOptions::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.2); border-radius: 4px;
+}
+
 
 /* =========================
    Appointment-Modal (Popover)
