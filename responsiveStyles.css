@@ -85,6 +85,22 @@ body {
 
 .gray-day { color: #726c6c; background-color: #e2dcdc; }
 
+/* Heutiger Tag: der Zahlenkreis */
+.day.today .day-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem; height: 2.2rem;
+  border-radius: 50%;
+  background: #ffecb3;        /* dezentes Gelb */
+  border: 2px solid #f5b400;  /* Ring */
+  font-weight: 700;
+}
+/* @media (max-width: 844px) {
+  .day.today .day-text { width: 1.8rem; height: 1.8rem; }
+} */
+
+
 /* Termin-Punkte oben rechts */
 .appt-dots {
   position: absolute;
@@ -381,6 +397,16 @@ body {
   #savedOptions .opt-del { transition: none; }
 }
 
+@keyframes opt-shrink-out {
+  0%   { transform: scale(1); opacity: 1; }
+  60%  { transform: scale(0.9); opacity: .5; }
+  100% { transform: scale(0.6); opacity: 0; }
+}
+/* Klasse, die beim Löschen kurz gesetzt wird */
+.option-item.is-deleting {
+  animation: opt-shrink-out 180ms ease both;
+}
+
 
 
 /* =========================
@@ -581,9 +607,9 @@ body {
 
 @media (max-width: 844px) {
   #calendar { gap: 2px; }
-  .day-text{ font-size: 0.75rem; }
-  .option-item { font-size: 0.75rem; }
-  .shift-display { font-size: 0.75rem; }
+  .day-text{ font-size: 1rem; }
+  .option-item { font-size: 1rem; }
+  .shift-display { font-size: 1rem; }
 }
 
 @media (max-width: 480px) {

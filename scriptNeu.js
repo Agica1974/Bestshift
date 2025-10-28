@@ -190,6 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Monatswechsel
   prevMonthBtn?.addEventListener("click", () => changeMonth(-1));
   nextMonthBtn?.addEventListener("click", () => changeMonth(1));
+
+  const state = localStorage.getItem("federalState") || "BW"; // speicher dir den Code irgendwo
+  syncHolidaysToAppointments(currentYear, state);
 });
 
 /* ===========================
@@ -290,24 +293,31 @@ document.getElementById("closeSavedOptionsBtn")?.addEventListener("click", () =>
   deleteBtn?.classList.remove("active");
 });
 
-
 function deleteOptionAt(index) {
   if (index < 0 || index >= savedOptions.length) return;
   const opt = savedOptions[index];
   const label = (opt.shift || "(leer)") + " " + (opt.color || "");
   if (!confirm(`Schicht "${label}" löschen?`)) return;
 
-  // Falls gerade selektiert: Auswahl zurücksetzen
-  if (selectedOption === savedOptions[index]) {
-    selectedOption = null;
+  // kleine Animation auf dem betroffenen Element
+  const container = document.getElementById("savedOptions");
+  const el = container?.children?.[index];
+  if (el) {
+    el.classList.add("is-deleting");
+    setTimeout(() => {
+      // nach Animation wirklich löschen
+      if (selectedOption === savedOptions[index]) selectedOption = null;
+      savedOptions.splice(index, 1);
+      localStorage.setItem("savedOptions", JSON.stringify(savedOptions));
+      renderSavedOptions();
+    }, 180);
+  } else {
+    // Fallback ohne Animation
+    if (selectedOption === savedOptions[index]) selectedOption = null;
+    savedOptions.splice(index, 1);
+    localStorage.setItem("savedOptions", JSON.stringify(savedOptions));
+    renderSavedOptions();
   }
-
-  // Eintrag entfernen & speichern
-  savedOptions.splice(index, 1);
-  localStorage.setItem("savedOptions", JSON.stringify(savedOptions));
-
-  // Neu rendern
-  renderSavedOptions();
 }
 
 
@@ -390,6 +400,14 @@ function createDayElement(day, month, year, isGray) {
   const dayText = document.createElement("span");
   dayText.classList.add("day-text");
   dayText.textContent = day;
+  const today = new Date();
+  if (!isGray &&
+      year === today.getFullYear() &&
+      month === today.getMonth() &&
+      day === today.getDate()) {
+    el.classList.add("today");
+  }
+
   el.appendChild(dayText);
 
   const shiftDisplay = document.createElement("span");
