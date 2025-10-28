@@ -664,6 +664,10 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 }
 #settingsModal #saveSettingsBtn:hover { background:#008999; }
 
+/* Mini-Kalender im Year-View etwas luftiger */
+#calendar .year-mini .day { font-size: .25rem; }
+
+
 /*=======================================================*/
 
 /* iOS: kein Auto-Zoom */
