@@ -222,6 +222,8 @@ function renderSavedOptions() {
   });
 
   // --- NEU: Delete-Badge (nur sichtbar im Löschmodus via CSS) ---
+
+  optionElement.style.setProperty('--badge-delay', `${index * 50}ms`);
   const del = document.createElement("span");
   del.className = "opt-del";
   del.textContent = "×";
@@ -234,34 +236,9 @@ function renderSavedOptions() {
   // --------------------------------------------------------------
 
   container.appendChild(optionElement);
+  
 });
 
-
-  // savedOptions.forEach((option) => {
-  //   const item = document.createElement("div");
-  //   item.className = "option-item";
-
-  //   const isClear = option.shift.trim() === "";
-
-  //   if (!isClear) {
-  //     item.style.backgroundColor = option.color;
-  //   } else {
-  //     // leere Option neutral darstellen
-  //     item.style.backgroundColor = "#fff";
-  //     item.style.borderStyle = "dashed";
-  //   }
-
-  //   const label = document.createElement("span");
-  //   label.className = "option-name";
-  //   label.textContent = isClear ? "Leer" : option.shift;
-  //   item.appendChild(label);
-
-  //   item.addEventListener("click", () => {
-  //     setSelectedOption(option, item);
-  //   });
-
-  //   container.appendChild(item);
-  // });
 }
 
 function setSelectedOption(option, itemEl) {
@@ -270,6 +247,7 @@ function setSelectedOption(option, itemEl) {
   itemEl?.classList.add("selected");
 }
 
+
 /* ==========================
    savedOptions löschen-Logik
    ========================== */
@@ -277,12 +255,41 @@ const deleteBtn = document.getElementById("deleteShiftModeButton");
 if (deleteBtn) {
   deleteBtn.addEventListener("click", () => {
     deleteShiftMode = !deleteShiftMode;
-    // visueller Zustand am Wrapper umschalten
-    document.getElementById("savedOptionsWrapper")?.classList.toggle("delete-mode", deleteShiftMode);
-    // Button-Style (optional)
+
+    const wrapper   = document.getElementById("savedOptionsWrapper");
+    const container = document.getElementById("savedOptions");
+    const controls  = document.querySelector(".controls");
+
+    // Liste sicher befüllen (damit opt-del wirklich im DOM ist)
+    renderSavedOptions();
+
+    // Wrapper SICHTBAR machen (wichtig, sonst bleibt alles unsichtbar)
+    wrapper?.classList.add("show");
+
+    // Delete-Mode Klasse setzen (am Wrapper + zusätzlich am Container)
+    wrapper?.classList.toggle("delete-mode", deleteShiftMode);
+    container?.classList.toggle("delete-mode", deleteShiftMode);
+
+    // Controls sichtbar lassen (nicht ausblenden)
+    controls?.classList.remove("is-hidden");
+
+    // Button-Optik
     deleteBtn.classList.toggle("active", deleteShiftMode);
   });
 }
+
+// Beim Schließen des Overlays Delete-Mode sauber zurücksetzen:
+document.getElementById("closeSavedOptionsBtn")?.addEventListener("click", () => {
+  deleteShiftMode = false;
+  const wrapper   = document.getElementById("savedOptionsWrapper");
+  const container = document.getElementById("savedOptions");
+  const deleteBtn = document.getElementById("deleteShiftModeButton");
+
+  wrapper?.classList.remove("show", "delete-mode");
+  container?.classList.remove("delete-mode");
+  deleteBtn?.classList.remove("active");
+});
+
 
 function deleteOptionAt(index) {
   if (index < 0 || index >= savedOptions.length) return;

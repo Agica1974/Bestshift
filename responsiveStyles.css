@@ -291,7 +291,7 @@ body {
 
 #savedOptions .option-item {
   scroll-snap-align: start;
-}
+} 
 
 .option-item.selected {
   border: 1px solid #000 !important;
@@ -307,34 +307,80 @@ body {
 
 
 /* Löschmodus: kleine rote X-Badges oben rechts auf den Kacheln */
+
+#savedOptions .option-item { position: relative; }
 #savedOptions .opt-del {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: -6px; right: -6px;
   width: 18px; height: 18px;
   border-radius: 50%;
   background: #ff3b30;
   color: #fff;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 12px; line-height: 18px;
   text-align: center;
   border: 1px solid #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,.25);
   cursor: pointer;
-  display: none; /* standard aus */
+  z-index: 3;
+  transform-origin: 50% 50%;
+  transition: transform 120ms ease;
 }
 
-/* Im Löschmodus anzeigen */
-.saved-options-wrapper.delete-mode .opt-del { display: inline-block; }
+/* Standard: X-Badges ausblenden */
+#savedOptions .opt-del { display: none; }
 
-/* Option-Items müssen relativ sein für opt-del Positionierung */
-#savedOptions .option-item { position: relative; }
+/* Im Delete-Mode anzeigen – robust: Wrapper ODER Container darf die Klasse tragen */
+.saved-options-wrapper.delete-mode #savedOptions .opt-del,
+#savedOptions.delete-mode .opt-del {
+  display: inline-block !important;
+}
+/* Im Löschmodus anzeigen */
+/* .saved-options-wrapper.delete-mode .opt-del { display: inline-block; } */
+
+
+
 
 /* Optional: schmalere Scrollbar */
 #savedOptions::-webkit-scrollbar { height: 8px; }
 #savedOptions::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,.2); border-radius: 4px;
 }
+
+/* ============ Badges: sanftes Einblenden ============ */
+@keyframes badge-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+/* Sichtbar im Delete-Mode + Animation (Delay via --badge-delay) */
+.saved-options-wrapper.delete-mode #savedOptions .opt-del,
+#savedOptions.delete-mode .opt-del {
+  display: inline-block !important;
+  animation: badge-pop 180ms cubic-bezier(.2,.9,.3,1.25) both;
+  animation-delay: var(--badge-delay, 0ms);
+}
+
+/* kleine Interaktion */
+#savedOptions .opt-del:hover {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+/* Optional: Item leicht „aktiv“ im Delete-Mode */
+.saved-options-wrapper.delete-mode #savedOptions .option-item {
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(255,59,48,0.08) inset;
+}
+
+/* Accessibility: wenn Nutzer reduzierte Bewegung möchte */
+@media (prefers-reduced-motion: reduce) {
+  .saved-options-wrapper.delete-mode #savedOptions .opt-del {
+    animation: none;
+  }
+  #savedOptions .opt-del { transition: none; }
+}
+
 
 
 /* =========================
