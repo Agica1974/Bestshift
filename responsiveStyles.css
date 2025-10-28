@@ -592,5 +592,5 @@ body {
   #calendar { gap: 2px; }
   .day-text{ font-size: 0.75rem; }
   .shift-display { font-size: 0.75rem;}
-  .option-item { font-size: 0.25rem; padding: 2px 2px;}
+  .option-item { font-size: 0.75rem; padding: 1px 1px;}
 }
