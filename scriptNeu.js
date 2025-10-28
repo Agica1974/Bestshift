@@ -377,9 +377,166 @@ function createCalendar() {
   // Termine nachziehen (aus appointment.js)
   if (window.restoreAppointments) window.restoreAppointments();
   
-
-
 }
+
+/* =========================
+   WEEK VIEW (Scaffold)
+   ========================= */
+function renderWeekView(anchorDate = new Date()) {
+  const calendar = document.getElementById("calendar");
+  if (!calendar) return;
+  calendar.innerHTML = "";
+
+  // Start der Woche anhand weekStartDay bestimmen
+  const d = new Date(anchorDate);
+  const dow = (d.getDay() - weekStartDay + 7) % 7; // 0..6
+  d.setDate(d.getDate() - dow); // Montag/Sonntag-Start
+
+  // Kopfzeile (Wochentagsnamen)
+  const weekDays = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  const adjusted = weekDays.slice(weekStartDay).concat(weekDays.slice(0, weekStartDay));
+  adjusted.forEach(day => {
+    const head = document.createElement("div");
+    head.classList.add("day-header");
+    head.textContent = day;
+    calendar.appendChild(head);
+  });
+
+  // 7 Tage rendern (keine grauen Tage im Week-View)
+  const firstDay = new Date(d);
+  for (let i = 0; i < 7; i++) {
+    const cur = new Date(firstDay);
+    cur.setDate(firstDay.getDate() + i);
+    const el = createDayElement(cur.getDate(), cur.getMonth(), cur.getFullYear(), false);
+    calendar.appendChild(el);
+  }
+
+  // Header-Text z. B. „KW 42 (14.10.–20.10.2025)“
+  const start = new Date(firstDay);
+  const end = new Date(firstDay); end.setDate(start.getDate() + 6);
+
+  const fmt = (dt) => `${String(dt.getDate()).padStart(2,"0")}.${String(dt.getMonth()+1).padStart(2,"0")}.${dt.getFullYear()}`;
+  const headerEl = document.getElementById("calendar-header");
+  if (headerEl) headerEl.textContent = `Woche ${fmt(start)} – ${fmt(end)}`;
+
+  // Styles für 7-Spalten-Grid sicherstellen
+  calendar.style.display = "grid";
+  calendar.style.gridTemplateColumns = "repeat(7, 1fr)";
+  calendar.style.gridTemplateRows = "1.5rem 1fr"; // 1 Kopfzeile + 1 Zeile Tage
+  calendar.style.gap = "5px";
+
+  // gespeicherte Schichten/Status & Termine einblenden
+  restoreAllDays();
+  if (typeof restoreAppointments === "function") restoreAppointments();
+}
+
+/* =========================
+   YEAR VIEW (Scaffold)
+   ========================= */
+function renderYearView(year = currentYear) {
+  const calendar = document.getElementById("calendar");
+  if (!calendar) return;
+  calendar.innerHTML = "";
+
+  const headerEl = document.getElementById("calendar-header");
+  if (headerEl) headerEl.textContent = `Jahr ${year}`;
+
+  // 3x4 Raster für 12 Monate
+  calendar.style.display = "grid";
+  calendar.style.gridTemplateColumns = "repeat(3, 1fr)";
+  calendar.style.gridAutoRows = "minmax(200px, auto)";
+  calendar.style.gap = "10px";
+
+  const shortNames = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+
+  for (let m = 0; m < 12; m++) {
+    const wrap = document.createElement("div");
+    wrap.style.border = "1px solid #e4e4e4";
+    wrap.style.borderRadius = "8px";
+    wrap.style.padding = "8px";
+    wrap.style.background = "#fff";
+
+    const title = document.createElement("div");
+    title.textContent = `${shortNames[m]} ${year}`;
+    title.style.fontWeight = "700";
+    title.style.marginBottom = "6px";
+    wrap.appendChild(title);
+
+    const mini = document.createElement("div");
+    mini.style.display = "grid";
+    mini.style.gridTemplateColumns = "repeat(7, 1fr)";
+    mini.style.gap = "2px";
+
+    // Wochentagsköpfe (klein)
+    const weekDays = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+    const adjusted = weekDays.slice(weekStartDay).concat(weekDays.slice(0, weekStartDay));
+    adjusted.forEach(dn => {
+      const h = document.createElement("div");
+      h.textContent = dn;
+      h.style.fontSize = ".72rem";
+      h.style.opacity = ".8";
+      h.style.textAlign = "center";
+      mini.appendChild(h);
+    });
+
+    // Offsets & Tage
+    const firstDay = new Date(year, m, 1).getDay();
+    const startOffset = (firstDay - weekStartDay + 7) % 7;
+    const daysInMonth = new Date(year, m+1, 0).getDate();
+    const prevMonthDays = new Date(year, m, 0).getDate();
+
+    // graue Vormonats-Tage
+    for (let i = startOffset; i > 0; i--) {
+      const g = document.createElement("div");
+      g.textContent = prevMonthDays - i + 1;
+      g.style.opacity = ".35";
+      g.style.fontSize = ".78rem";
+      g.style.textAlign = "center";
+      g.style.border = "1px solid #f1f1f1";
+      g.style.borderRadius = "4px";
+      mini.appendChild(g);
+    }
+
+    // aktuelle Monats-Tage
+    const today = new Date();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement("div");
+      cell.textContent = d;
+      cell.style.fontSize = ".85rem";
+      cell.style.textAlign = "center";
+      cell.style.border = "1px solid #eaeaea";
+      cell.style.borderRadius = "4px";
+      cell.style.padding = "2px 0";
+
+      // Heute-Markierung klein
+      if (year === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
+        cell.style.background = "#ffecb3";
+        cell.style.fontWeight = "700";
+      }
+
+      // Klick → zur Monatsansicht springen
+      cell.style.cursor = "pointer";
+      cell.addEventListener("click", () => {
+        currentYear = year;
+        currentMonth = m;
+        createCalendar();
+      });
+
+      mini.appendChild(cell);
+    }
+
+    wrap.appendChild(mini);
+    calendar.appendChild(wrap);
+  }
+}
+
+// global verfügbar machen (für Settings/Buttons)
+window.renderWeekView = renderWeekView;
+window.renderYearView = renderYearView;
+
+/*=============
+Monat wechseln
+===============*/
 
 function changeMonth(offset) {
   currentMonth += offset;
@@ -527,6 +684,107 @@ function restoreAllDays() {
     renderDayRecord(dayElement, savedChanges[dateKey]);
   });
 }
+
+/* ====================
+   SETTINGS (View + BL)
+   ==================== */
+
+const SETTINGS_KEY = "appSettings"; // { view: 'month'|'week'|'year', state: 'HE' }
+
+function loadSettings() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (raw && typeof raw === 'object') return raw;
+  } catch {}
+  // Defaults: Monatsansicht, Hessen
+  return { view: 'month', state: 'HE' };
+}
+
+function saveSettings(s) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+}
+
+function applySettings(s) {
+  // Bundesland-Feiertage syncen (falls holidays.js eingebunden ist)
+  if (typeof syncHolidaysToAppointments === "function") {
+    syncHolidaysToAppointments(currentYear, s.state);
+  }
+
+  // Ansicht umschalten
+  if (s.view === "week" && typeof renderWeekView === "function") {
+    renderWeekView(new Date()); // Woche der heutigen Datum
+  } else if (s.view === "year" && typeof renderYearView === "function") {
+    renderYearView(currentYear);
+  } else {
+    // Monat (Default)
+    createCalendar();
+  }
+  // Dots/Termine wiederherstellen (falls nicht in den Renderern ohnehin aufgerufen)
+  if (typeof restoreAppointments === "function") restoreAppointments();
+}
+
+function initSettingsUI() {
+  const modal   = document.getElementById("settingsModal");
+  const openBtn = document.getElementById("openSettingsBtn");
+  const closeBtn= document.getElementById("closeSettingsBtn");
+  const saveBtn = document.getElementById("saveSettingsBtn");
+  const stateSel= document.getElementById("stateSelect");
+  const radios  = Array.from(document.querySelectorAll("input[name='viewMode']"));
+
+  const s = loadSettings();
+
+  // UI füllen
+  // View
+  const r = radios.find(r => r.value === s.view) || radios.find(r => r.value === "month");
+  if (r) r.checked = true;
+  // State
+  if (stateSel) stateSel.value = s.state || "HE";
+
+  // Öffnen/Schließen
+  openBtn?.addEventListener("click", () => {
+    modal.hidden = false;
+    modal.style.display = "grid";
+  });
+  closeBtn?.addEventListener("click", () => {
+    modal.style.display = "none";
+    modal.hidden = true;
+  });
+  // Hintergrund-Klick schließt
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      modal.hidden = true;
+    }
+  });
+
+  // Speichern
+  saveBtn?.addEventListener("click", () => {
+    const selectedView = (radios.find(r => r.checked)?.value) || "month";
+    const selectedState= stateSel?.value || "HE";
+    const next = { view: selectedView, state: selectedState };
+    saveSettings(next);
+    applySettings(next);
+    // zu → modal schließen
+    modal.style.display = "none";
+    modal.hidden = true;
+  });
+}
+
+// Beim Laden: Settings anwenden
+document.addEventListener("DOMContentLoaded", () => {
+  initSettingsUI();
+  // Stelle sicher, dass beim allerersten Start auch Defaults greifen:
+  const s = loadSettings();
+  // Feiertage für Default-BL syncen (nur wenn noch nicht passiert)
+  if (typeof syncHolidaysToAppointments === "function") {
+    syncHolidaysToAppointments(currentYear, s.state || "HE");
+  }
+  // Ansicht ggf. auf Monatsansicht lassen (du hast createCalendar schon), also nur bei Abweichung wechseln:
+  if (s.view && s.view !== "month") {
+    applySettings(s);
+  }
+});
+
 
 // Default-Vorlagen + Wochenstart in localStorage schreiben
 function seedDefaults({ overwrite = false } = {}) {

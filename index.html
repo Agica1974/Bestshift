@@ -52,6 +52,7 @@
         <button id="deleteShiftModeButton">−</button>
         <button id="prevMonth">&#9665;</button>
         <button id="nextMonth">&#9655;</button>
+        <button id="openSettingsBtn" title="Einstellungen">⚙️</button>
       </div>
     </div>
   </div>
@@ -74,5 +75,51 @@
       <button id="saveAppointment">Speichern</button>
     </div>
   </div>
+
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="modal settings-modal" hidden>
+  <div class="modal-content">
+    <button id="closeSettingsBtn" class="modal-close" aria-label="Schließen">×</button>
+    <h3>Einstellungen</h3>
+
+    <div class="field">
+      <label>Ansicht</label>
+      <div class="view-options">
+        <label><input type="radio" name="viewMode" value="month"> Monat</label>
+        <label><input type="radio" name="viewMode" value="week"> Woche</label>
+        <label><input type="radio" name="viewMode" value="year"> Jahr</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="stateSelect">Bundesland</label>
+      <select id="stateSelect">
+        <!-- Code (ISO-like) : Name -->
+        <option value="BW">Baden-Württemberg</option>
+        <option value="BY">Bayern</option>
+        <option value="BE">Berlin</option>
+        <option value="BB">Brandenburg</option>
+        <option value="HB">Bremen</option>
+        <option value="HH">Hamburg</option>
+        <option value="HE">Hessen</option>
+        <option value="MV">Mecklenburg-Vorpommern</option>
+        <option value="NI">Niedersachsen</option>
+        <option value="NW">Nordrhein-Westfalen</option>
+        <option value="RP">Rheinland-Pfalz</option>
+        <option value="SL">Saarland</option>
+        <option value="SN">Sachsen</option>
+        <option value="ST">Sachsen-Anhalt</option>
+        <option value="SH">Schleswig-Holstein</option>
+        <option value="TH">Thüringen</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button id="saveSettingsBtn">Speichern</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
