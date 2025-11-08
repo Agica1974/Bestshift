@@ -176,6 +176,12 @@ body {
   border-color: aqua;
 }
 
+.ion_icon {
+    font-size: 1rem;
+    color: white;
+   
+  }
+
 /* ========== Options-Modal (Schichten anlegen) ========== */
 .options-menu {
   position: fixed;
@@ -224,6 +230,7 @@ body {
   color: aqua;
   border-color: aqua;}
 
+  
 /* Close-X im Modal */
 .modal-close {
   position: absolute;
@@ -589,7 +596,7 @@ body {
 #appointmentModal.is-centered::after { display: none !important; }
 
 /* Zahnrad-Button optisch wie die anderen */
-#openSettingsBtn {
+/* #openSettingsBtn {
   width: 100%;
   height: 3rem;
   padding: 0.5em 1em;
@@ -599,7 +606,7 @@ body {
   color: #fff;
   cursor: pointer;
 }
-#openSettingsBtn:hover { background-color:#008999; color:aqua; border-color:aqua; }
+#openSettingsBtn:hover { background-color:#008999; color:aqua; border-color:aqua; } */
 
 /* =============================================================
 Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
