@@ -45,14 +45,14 @@ body {
   margin-bottom: 0;
 }
 
-#calendar {
+/* #calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: 1.5rem repeat(6, 1fr); /* 7 Tage × 6 Wochen */
+  grid-template-rows: 1.5rem repeat(6, 1fr); 
   gap: 5px;
   margin-top: 0;
-  min-height: 0; /* wichtig für Grid-Shrink */
-}
+  min-height: 0; 
+}*/
 
 /* Tageszelle */
 .day {
@@ -691,6 +691,181 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
 }
+/* ========== MONTH VIEW ========== */
+
+#calendar[data-view="month"] {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 1.5rem repeat(6, minmax(70px, 1fr)); /* Kopf + 6 Reihen */
+  gap: 5px;
+  min-height: 0;
+}
+
+#calendar[data-view="month"] .day-header {
+  display: grid;
+  align-items: end;
+  height: 1.5rem;
+}
+
+#calendar[data-view="month"] .day {
+  border: 1px solid #47adb5;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#calendar[data-view="month"] .gray-day {
+  color: #726c6c;
+  background-color: #e2dcdc;
+}
+
+#calendar[data-view="month"] .day-text {
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+#calendar[data-view="month"] .shift-display {
+  margin-top: 4px;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Heute als Kreis */
+#calendar[data-view="month"] .day.today .day-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: #ffecb3;
+  border: 2px solid #f5b400;
+  font-weight: 700;
+}
+
+/* Termin-Punkte mittig oben */
+#calendar[data-view="month"] .appt-dots {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  pointer-events: none;
+}
+
+
+/* ========== WEEK VIEW ========== */
+
+#calendar[data-view="week"] {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 1.5rem 1fr;
+  gap: 5px;
+}
+
+#calendar[data-view="week"] .day-header {
+  display: grid;
+  align-items: end;
+  height: 1.5rem;
+}
+
+#calendar[data-view="week"] .day {
+  border: 1px solid #47adb5;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#calendar[data-view="week"] .appt-dots {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  pointer-events: none;
+}
+
+
+/* ========== YEAR VIEW ========== */
+
+#calendar[data-view="year"] {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+#calendar[data-view="year"] .year-month {
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#calendar[data-view="year"] .year-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 0 0 2px;
+  text-align: left;
+}
+
+#calendar[data-view="year"] .year-mini {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+#calendar[data-view="year"] .year-head {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  text-align: center;
+}
+
+#calendar[data-view="year"] .year-cell {
+  font-size: 0.65rem;
+  text-align: center;
+  border: 1px solid #eaeaea;
+  border-radius: 3px;
+  padding: 1px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#calendar[data-view="year"] .year-cell.is-gray {
+  opacity: 0.35;
+  border-color: #f1f1f1;
+}
+
+#calendar[data-view="year"] .year-cell.is-today {
+  background: #ffecb3;
+  font-weight: 700;
+}
+
+/* Mobile: 2 Spalten statt 3 im Jahresraster */
+@media (max-width: 640px) {
+  #calendar[data-view="year"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+
 
 /* ========== Responsive ========== */
 @media (max-width: 1180px) {

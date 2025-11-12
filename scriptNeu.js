@@ -327,6 +327,7 @@ function deleteOptionAt(index) {
 function createCalendar() {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
+  calendar.dataset.view = "month";
   calendar.innerHTML = "";
 
   // Wochentage rendern
@@ -385,6 +386,7 @@ function createCalendar() {
 function renderWeekView(anchorDate = new Date()) {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
+  calendar.dataset.view = "week";
   calendar.innerHTML = "";
 
   // Start der Woche anhand weekStartDay bestimmen
@@ -419,11 +421,6 @@ function renderWeekView(anchorDate = new Date()) {
   const headerEl = document.getElementById("calendar-header");
   if (headerEl) headerEl.textContent = `Woche ${fmt(start)} – ${fmt(end)}`;
 
-  // Styles für 7-Spalten-Grid sicherstellen
-  calendar.style.display = "grid";
-  calendar.style.gridTemplateColumns = "repeat(7, 1fr)";
-  calendar.style.gridTemplateRows = "1.5rem 1fr"; // 1 Kopfzeile + 1 Zeile Tage
-  calendar.style.gap = "5px";
 
   // gespeicherte Schichten/Status & Termine einblenden
   restoreAllDays();
@@ -436,64 +433,55 @@ function renderWeekView(anchorDate = new Date()) {
 function renderYearView(year = currentYear) {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
+
+  calendar.dataset.view = "year";   // wichtig für das CSS
   calendar.innerHTML = "";
 
   const headerEl = document.getElementById("calendar-header");
   if (headerEl) headerEl.textContent = `Jahr ${year}`;
 
-  // 3x4 Raster für 12 Monate
-  calendar.style.display = "grid";
-  calendar.style.gridTemplateColumns = "repeat(3, 1fr)";
-  calendar.style.gridAutoRows = "minmax(200px, auto)";
-  calendar.style.gap = "10px";
-
-  const shortNames = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+  const shortNames = [
+    "Jan","Feb","Mär","Apr","Mai","Jun",
+    "Jul","Aug","Sep","Okt","Nov","Dez"
+  ];
 
   for (let m = 0; m < 12; m++) {
+    // Kachel für einen Monat
     const wrap = document.createElement("div");
-    wrap.style.border = "1px solid #e4e4e4";
-    wrap.style.borderRadius = "8px";
-    wrap.style.padding = "8px";
-    wrap.style.background = "#fff";
+    wrap.className = "year-month";
 
     const title = document.createElement("div");
+    title.className = "year-title";
     title.textContent = `${shortNames[m]} ${year}`;
-    title.style.fontWeight = "700";
-    title.style.marginBottom = "6px";
     wrap.appendChild(title);
 
     const mini = document.createElement("div");
-    mini.style.display = "grid";
-    mini.style.gridTemplateColumns = "repeat(7, 1fr)";
-    mini.style.gap = "2px";
+    mini.className = "year-mini";
 
     // Wochentagsköpfe (klein)
     const weekDays = ["So","Mo","Di","Mi","Do","Fr","Sa"];
-    const adjusted = weekDays.slice(weekStartDay).concat(weekDays.slice(0, weekStartDay));
+    const adjusted = weekDays
+      .slice(weekStartDay)
+      .concat(weekDays.slice(0, weekStartDay));
+
     adjusted.forEach(dn => {
       const h = document.createElement("div");
+      h.className = "year-head";
       h.textContent = dn;
-      h.style.fontSize = ".72rem";
-      h.style.opacity = ".8";
-      h.style.textAlign = "center";
       mini.appendChild(h);
     });
 
-    // Offsets & Tage
-    const firstDay = new Date(year, m, 1).getDay();
-    const startOffset = (firstDay - weekStartDay + 7) % 7;
-    const daysInMonth = new Date(year, m+1, 0).getDate();
+    // Offsets & Tage berechnen
+    const firstDay      = new Date(year, m, 1).getDay();
+    const startOffset   = (firstDay - weekStartDay + 7) % 7;
+    const daysInMonth   = new Date(year, m + 1, 0).getDate();
     const prevMonthDays = new Date(year, m, 0).getDate();
 
     // graue Vormonats-Tage
     for (let i = startOffset; i > 0; i--) {
       const g = document.createElement("div");
+      g.className = "year-cell is-gray";
       g.textContent = prevMonthDays - i + 1;
-      g.style.opacity = ".35";
-      g.style.fontSize = ".78rem";
-      g.style.textAlign = "center";
-      g.style.border = "1px solid #f1f1f1";
-      g.style.borderRadius = "4px";
       mini.appendChild(g);
     }
 
@@ -501,21 +489,19 @@ function renderYearView(year = currentYear) {
     const today = new Date();
     for (let d = 1; d <= daysInMonth; d++) {
       const cell = document.createElement("div");
+      cell.className = "year-cell";
       cell.textContent = d;
-      cell.style.fontSize = ".85rem";
-      cell.style.textAlign = "center";
-      cell.style.border = "1px solid #eaeaea";
-      cell.style.borderRadius = "4px";
-      cell.style.padding = "2px 0";
 
-      // Heute-Markierung klein
-      if (year === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
-        cell.style.background = "#ffecb3";
-        cell.style.fontWeight = "700";
+      // Heute-Markierung
+      if (
+        year === today.getFullYear() &&
+        m    === today.getMonth() &&
+        d    === today.getDate()
+      ) {
+        cell.classList.add("is-today");
       }
 
       // Klick → zur Monatsansicht springen
-      cell.style.cursor = "pointer";
       cell.addEventListener("click", () => {
         currentYear = year;
         currentMonth = m;
@@ -529,6 +515,7 @@ function renderYearView(year = currentYear) {
     calendar.appendChild(wrap);
   }
 }
+
 
 // global verfügbar machen (für Settings/Buttons)
 window.renderWeekView = renderWeekView;
