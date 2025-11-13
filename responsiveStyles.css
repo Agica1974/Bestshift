@@ -801,44 +801,54 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 
 /* ========== YEAR VIEW ========== */
 
+/* ========== YEAR VIEW ========== */
+
+/* Jahresansicht, kompakt in 3 Spalten – auch auf Mobile */
 #calendar[data-view="year"] {
   display: grid !important;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 6px;
+  max-height: 100%;
+  overflow-y: auto;     /* scrollt nur der Kalender, Buttons bleiben sichtbar */
 }
 
+/* Monats-Kacheln kleiner */
 #calendar[data-view="year"] .year-month {
   border: 1px solid #e4e4e4;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fff;
-  padding: 6px;
-  min-height: 180px;
+  padding: 4px;
+  min-height: 140px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
+/* Monatstitel (oben links) */
 #calendar[data-view="year"] .year-title {
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.75rem;      /* ~12px */
   margin: 0 0 2px;
   text-align: left;
 }
 
+/* Gitter mit Wochentagen + Tagen */
 #calendar[data-view="year"] .year-mini {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
 
+/* Wochentags-Köpfe (So, Mo, ...) */
 #calendar[data-view="year"] .year-head {
-  font-size: 0.65rem;
+  font-size: 0.55rem;      /* ~9px */
   opacity: 0.8;
   text-align: center;
 }
 
+/* Tage */
 #calendar[data-view="year"] .year-cell {
-  font-size: 0.65rem;
+  font-size: 0.6rem;       /* ~9.6px */
   text-align: center;
   border: 1px solid #eaeaea;
   border-radius: 3px;
@@ -847,22 +857,18 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   white-space: nowrap;
 }
 
+/* Vormonat/Nachmonat ausgegraut */
 #calendar[data-view="year"] .year-cell.is-gray {
   opacity: 0.35;
   border-color: #f1f1f1;
 }
 
+/* Heute-Tag hervorgehoben */
 #calendar[data-view="year"] .year-cell.is-today {
   background: #ffecb3;
   font-weight: 700;
 }
 
-/* Mobile: 2 Spalten statt 3 im Jahresraster */
-@media (max-width: 640px) {
-  #calendar[data-view="year"] {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
 
 
 
