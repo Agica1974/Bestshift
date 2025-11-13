@@ -860,7 +860,7 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 /* Mobile: 2 Spalten statt 3 im Jahresraster */
 @media (max-width: 640px) {
   #calendar[data-view="year"] {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

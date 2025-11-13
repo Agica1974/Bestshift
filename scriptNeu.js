@@ -9,6 +9,9 @@ let savedOptions = JSON.parse(localStorage.getItem("savedOptions")) || [];
 let selectedOption = null;                // aktuell gewählte Vorlage
 let weekStartDay = parseInt(localStorage.getItem("weekStartDay")) || 0; // 0=So
 let deleteShiftMode = false;
+let currentView = "month";          // "month" | "week" | "year"
+let currentWeekAnchor = new Date(); // Startdatum der aktuellen Wochenansicht
+
 
 
 // Für appointment.js als Guard sichtbar machen:
@@ -188,8 +191,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Monatswechsel
-  prevMonthBtn?.addEventListener("click", () => changeMonth(-1));
-  nextMonthBtn?.addEventListener("click", () => changeMonth(1));
+
+  prevMonthBtn?.addEventListener("click", () => {
+  if (currentView === "week") {
+    changeWeek(-1);     // eine Woche zurück
+  } else if (currentView === "year") {
+    changeYear(-1);     // ein Jahr zurück
+  } else {
+    changeMonth(-1);    // normal: ein Monat zurück
+  }
+});
+
+nextMonthBtn?.addEventListener("click", () => {
+  if (currentView === "week") {
+    changeWeek(1);      // eine Woche vor
+  } else if (currentView === "year") {
+    changeYear(1);      // ein Jahr vor
+  } else {
+    changeMonth(1);     // normal: ein Monat vor
+  }
+});
+
+  // prevMonthBtn?.addEventListener("click", () => changeMonth(-1));
+  // nextMonthBtn?.addEventListener("click", () => changeMonth(1));
 
   const state = localStorage.getItem("federalState") || "BW"; // speicher dir den Code irgendwo
   syncHolidaysToAppointments(currentYear, state);
@@ -327,6 +351,7 @@ function deleteOptionAt(index) {
 function createCalendar() {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
+  currentView = "month";
   calendar.dataset.view = "month";
   calendar.innerHTML = "";
 
@@ -386,17 +411,25 @@ function createCalendar() {
 function renderWeekView(anchorDate = new Date()) {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
+
+  currentView = "week";           // <--- wichtig für Pfeile
   calendar.dataset.view = "week";
   calendar.innerHTML = "";
 
   // Start der Woche anhand weekStartDay bestimmen
   const d = new Date(anchorDate);
   const dow = (d.getDay() - weekStartDay + 7) % 7; // 0..6
-  d.setDate(d.getDate() - dow); // Montag/Sonntag-Start
+  d.setDate(d.getDate() - dow); // Wochenanfang
 
-  // Kopfzeile (Wochentagsnamen)
-  const weekDays = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
-  const adjusted = weekDays.slice(weekStartDay).concat(weekDays.slice(0, weekStartDay));
+  // aktuellen Anchor für Vor/Zurück speichern
+  currentWeekAnchor = new Date(d);
+
+  // Kopfzeile mit Wochentagen
+  const weekDays = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+  const adjusted = weekDays
+    .slice(weekStartDay)
+    .concat(weekDays.slice(0, weekStartDay));
+
   adjusted.forEach(day => {
     const head = document.createElement("div");
     head.classList.add("day-header");
@@ -404,28 +437,33 @@ function renderWeekView(anchorDate = new Date()) {
     calendar.appendChild(head);
   });
 
-  // 7 Tage rendern (keine grauen Tage im Week-View)
-  const firstDay = new Date(d);
+  // 7 Tage rendern
+  const start = new Date(d);
   for (let i = 0; i < 7; i++) {
-    const cur = new Date(firstDay);
-    cur.setDate(firstDay.getDate() + i);
-    const el = createDayElement(cur.getDate(), cur.getMonth(), cur.getFullYear(), false);
+    const cur = new Date(start);
+    cur.setDate(start.getDate() + i);
+    const el = createDayElement(
+      cur.getDate(),
+      cur.getMonth(),
+      cur.getFullYear(),
+      false
+    );
     calendar.appendChild(el);
   }
 
-  // Header-Text z. B. „KW 42 (14.10.–20.10.2025)“
-  const start = new Date(firstDay);
-  const end = new Date(firstDay); end.setDate(start.getDate() + 6);
-
-  const fmt = (dt) => `${String(dt.getDate()).padStart(2,"0")}.${String(dt.getMonth()+1).padStart(2,"0")}.${dt.getFullYear()}`;
+  // Header-Text, z. B. „Woche 06.01.2025 – 12.01.2025“
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  const fmt = (dt) =>
+    `${String(dt.getDate()).padStart(2,"0")}.${String(dt.getMonth()+1).padStart(2,"0")}.${dt.getFullYear()}`;
   const headerEl = document.getElementById("calendar-header");
   if (headerEl) headerEl.textContent = `Woche ${fmt(start)} – ${fmt(end)}`;
 
-
-  // gespeicherte Schichten/Status & Termine einblenden
+  // gespeicherte Schichten und Termine einblenden
   restoreAllDays();
   if (typeof restoreAppointments === "function") restoreAppointments();
 }
+
 
 /* =========================
    YEAR VIEW (Scaffold)
@@ -434,7 +472,8 @@ function renderYearView(year = currentYear) {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
 
-  calendar.dataset.view = "year";   // wichtig für das CSS
+  currentView = "year";           // <--- NEU
+  calendar.dataset.view = "year";
   calendar.innerHTML = "";
 
   const headerEl = document.getElementById("calendar-header");
@@ -445,8 +484,10 @@ function renderYearView(year = currentYear) {
     "Jul","Aug","Sep","Okt","Nov","Dez"
   ];
 
+  // gespeicherte Schichten laden (einmal)
+  const savedChanges = JSON.parse(localStorage.getItem("savedChanges")) || {};
+
   for (let m = 0; m < 12; m++) {
-    // Kachel für einen Monat
     const wrap = document.createElement("div");
     wrap.className = "year-month";
 
@@ -458,7 +499,7 @@ function renderYearView(year = currentYear) {
     const mini = document.createElement("div");
     mini.className = "year-mini";
 
-    // Wochentagsköpfe (klein)
+    // Wochentagsköpfe
     const weekDays = ["So","Mo","Di","Mi","Do","Fr","Sa"];
     const adjusted = weekDays
       .slice(weekStartDay)
@@ -471,7 +512,7 @@ function renderYearView(year = currentYear) {
       mini.appendChild(h);
     });
 
-    // Offsets & Tage berechnen
+    // Offsets & Tage
     const firstDay      = new Date(year, m, 1).getDay();
     const startOffset   = (firstDay - weekStartDay + 7) % 7;
     const daysInMonth   = new Date(year, m + 1, 0).getDate();
@@ -485,12 +526,27 @@ function renderYearView(year = currentYear) {
       mini.appendChild(g);
     }
 
-    // aktuelle Monats-Tage
     const today = new Date();
+
+    // aktuelle Monats-Tage
     for (let d = 1; d <= daysInMonth; d++) {
       const cell = document.createElement("div");
       cell.className = "year-cell";
       cell.textContent = d;
+
+      // dateKey wie im Monatskalender
+      const dateKey = `${year}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+      cell.dataset.date = dateKey;
+
+      // gespeicherte Schicht holen
+      const rec = savedChanges[dateKey];
+      if (rec) {
+        // bevorzugt Basisfarbe, sonst Statusfarbe
+        let col = rec.color || rec.statusColor;
+        if (col) {
+          cell.style.backgroundColor = col;
+        }
+      }
 
       // Heute-Markierung
       if (
@@ -501,7 +557,7 @@ function renderYearView(year = currentYear) {
         cell.classList.add("is-today");
       }
 
-      // Klick → zur Monatsansicht springen
+      // Klick → Monatsansicht
       cell.addEventListener("click", () => {
         currentYear = year;
         currentMonth = m;
@@ -515,6 +571,7 @@ function renderYearView(year = currentYear) {
     calendar.appendChild(wrap);
   }
 }
+
 
 
 // global verfügbar machen (für Settings/Buttons)
@@ -531,6 +588,19 @@ function changeMonth(offset) {
   else if (currentMonth > 11) { currentMonth = 0; currentYear++; }
   createCalendar();
 }
+
+function changeWeek(offsetWeeks) {
+  // eine Woche = 7 Tage
+  const anchor = new Date(currentWeekAnchor);
+  anchor.setDate(anchor.getDate() + offsetWeeks * 7);
+  renderWeekView(anchor);
+}
+
+function changeYear(offsetYears) {
+  currentYear += offsetYears;
+  renderYearView(currentYear);
+}
+
 
 function createDayElement(day, month, year, isGray) {
   const el = document.createElement("div");
