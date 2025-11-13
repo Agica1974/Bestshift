@@ -887,11 +887,11 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   .shift-display { font-size: 1rem; }
 }
 
-@media (max-width: 480px) {
+/* @media (max-width: 480px) {
   .changeMonthButtons button { font-size: 0.25rem; height: 2.2rem; }
   .calendar-container { height: 100dvh; }
   #calendar { gap: 2px; }
   .day-text{ font-size: 0.75rem; }
   .shift-display { font-size: 0.75rem;}
   .option-item { font-size: 0.75rem; padding: 1px 1px;}
-}
+} */
