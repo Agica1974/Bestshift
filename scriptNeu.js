@@ -130,12 +130,30 @@ function renderDayRecord(dayEl, rec) {
   renderStatusUI(dayEl, statusCode, statusColor);
 }
 
+const THEME_KEY = "theme"; // localStorage key
+
+function applyTheme(theme) {
+  const root = document.documentElement; // <html>
+
+  if (theme === "dark") {
+    root.classList.add("dark-mode");
+  } else {
+    root.classList.remove("dark-mode");
+  }
+}
+
+
 
 /* ====================================================================
    SeedDafaults() wird aufgerufen um die Schicht- Optionen zu erstellen
    ==================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // 🔹 Theme aus localStorage holen
+  const storedTheme = localStorage.getItem(THEME_KEY) || "light";
+  applyTheme(storedTheme);
+
   // 1) Defaults einmalig setzen (ohne UI)
   seedDefaults(); // oder seedDefaults({ overwrite:true }) zum Reset in der Entwicklung
 
@@ -202,6 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function clearSelectedOption() {
   selectedOption = null;
   document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
+  
+  
 }
 
 

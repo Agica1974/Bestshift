@@ -1024,3 +1024,131 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
     overflow: hidden;
   }
 }
+
+/* =========================
+   DARK MODE
+   ========================= */
+
+.dark-mode body {
+  background: radial-gradient(circle at top, #1f2933 0, #050816 45%, #000 100%);
+  color: #e5e7eb;
+}
+
+.dark-mode .calendar-container {
+  background: #0b1120;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  border: 1px solid #1f2937;
+}
+
+.dark-mode #calendar-header {
+  color: #f9fafb;
+}
+
+/* Tage im Monat/Week */
+.dark-mode #calendar[data-view="month"] .day,
+.dark-mode #calendar[data-view="week"] .day {
+  background: #111827;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.dark-mode #calendar[data-view="month"] .gray-day,
+.dark-mode #calendar[data-view="week"] .gray-day {
+  background: #020617;
+  color: #6b7280;
+}
+
+/* Heute-Kreis etwas anders im Dark Mode */
+.dark-mode #calendar[data-view="month"] .day.today .day-text,
+.dark-mode #calendar[data-view="week"] .day.today .day-text {
+  background: #facc15;
+  border-color: #eab308;
+  color: #111827;
+}
+
+/* Buttons unten */
+.dark-mode .changeMonthButtons button {
+  background-color: #111827;
+  border-color: #1f2937;
+}
+
+.dark-mode .changeMonthButtons button:hover {
+  background-color: #1f2937;
+}
+
+/* Ionicons etwas heller */
+.dark-mode .ion_icon {
+  color: #e5e7eb;
+}
+.dark-mode .ion_icon:hover {
+  color: #38bdf8;
+}
+
+/* Options-Modal (Schichten anlegen) */
+.dark-mode .options-menu {
+  background: #020617;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Saved Options */
+.dark-mode #savedOptions {
+  background: #020617;
+  border-color: #1f2937;
+}
+
+.dark-mode .option-item {
+  border-color: #374151;
+}
+
+/* Appointment-Modal */
+.dark-mode #appointmentModal.modal {
+  background: #020617;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+.dark-mode #appointmentModal .modal-content {
+  background: #020617;
+}
+
+.dark-mode #appointmentModal .shift-banner.empty {
+  background: #111827;
+  color: #9ca3af;
+}
+
+/* Termin-Karten im Modal */
+.dark-mode #appointmentModal .appt-item {
+  background: #020617;
+  border: 1px solid #1f2937;
+}
+
+/* Settings-Modal */
+.dark-mode #settingsModal .modal-content {
+  background: #020617;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+/* Status-Streifen unten */
+.dark-mode .status-strip {
+  opacity: 0.95;
+}
+
+/* Week-View Termine */
+.dark-mode #calendar[data-view="week"] .week-appt-time {
+  color: #9ca3af;
+}
+.dark-mode #calendar[data-view="week"] .week-appt-title {
+  color: #e5e7eb;
+}
+.dark-mode #calendar[data-view="week"] .week-appt-place {
+  color: #9ca3af;
+}
+
+/* Punkte (Monatsansicht) */
+.dark-mode .appt-dot {
+  background: #e5e7eb;
+}
+.dark-mode .appt-plus {
+  color: #e5e7eb;
+}
