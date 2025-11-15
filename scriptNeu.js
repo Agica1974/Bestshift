@@ -221,7 +221,6 @@ document.addEventListener("DOMContentLoaded", () => {
   selectedOption = null;
   document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
   
-  
 }
 
 
@@ -278,6 +277,23 @@ nextMonthBtn?.addEventListener("click", () => {
 
   const state = localStorage.getItem("federalState") || "BW"; // speicher dir den Code irgendwo
   syncHolidaysToAppointments(currentYear, state);
+
+   // ========== THEME RADIO BUTTONS ==========
+  const themeRadios = document.querySelectorAll('input[name="theme"]');
+
+  if (themeRadios.length) {
+    const storedTheme = localStorage.getItem(THEME_KEY) || "light";
+
+    themeRadios.forEach(radio => {
+      radio.checked = (radio.value === storedTheme);
+
+      radio.addEventListener("change", (e) => {
+        const theme = e.target.value === "dark" ? "dark" : "light";
+        applyTheme(theme);
+        localStorage.setItem(THEME_KEY, theme);
+      });
+    });
+  }
 });
 
 /* ===========================
