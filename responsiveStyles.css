@@ -163,7 +163,7 @@ body {
 }
 .changeMonthButtons button {
   width: 100%;
-  height: 3.8rem;
+  height: 3rem;
   padding: 0.5em 1em;
   display: flex;
   justify-content: center;
@@ -795,15 +795,11 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 
 /* rechte Spalte: "day" als Box für Schichten/Pills + Punkte */
 #calendar[data-view="week"] .day {
-  border: 1px solid #47adb5;
-  border-radius: 6px;
-  background: #fff;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: flex-start;
-  padding: 4px 8px;
-  position: relative;
-  overflow: hidden;
+  padding: 4px 6px;
 }
 
 /* das Datum im Day-Element im Wochenview ausblenden –
@@ -815,6 +811,7 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 /* Schicht-Text in Woche etwas kleiner */
 #calendar[data-view="week"] .shift-display {
   font-size: 0.9rem;
+  margin-bottom: 3px;
 }
 
 /* Termin-Punkte rechts mittig in der Day-Zelle */
@@ -829,22 +826,28 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   pointer-events: none;
 }
 
-/* Termine als Liste in der Wochenansicht */
+
+/* Liste der Termine im Week-View */
 #calendar[data-view="week"] .week-appt-list {
-  margin-left: 6px;
+  margin-left: 0;                 /* nicht mehr extra einrücken */
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 2px;                       /* enger Abstand zwischen Terminen */
   font-size: 0.78rem;
-  align-self: stretch;
+  width: 100%;
 }
 
+/* Ein Termin: 3 Spalten → Zeit | Titel | Ort */
 #calendar[data-view="week"] .week-appt-item {
-  display: flex;
-  gap: 20px;
-  align-items: baseline;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.3fr) minmax(0, 1.1fr);
+  column-gap: 20px;
+  align-items: start;
+  justify-items: start;
+  border: 1px solid red;
 }
 
+/* Zeit links, schmal, Monospace */
 #calendar[data-view="week"] .week-appt-time {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   white-space: nowrap;
@@ -852,18 +855,21 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   font-size: 0.75rem;
 }
 
+/* Titel: mittlere Spalte, darf abbrechen mit … */
 #calendar[data-view="week"] .week-appt-title {
-  /* flex: 1; */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 600;
 }
 
+/* Ort: rechte Spalte, etwas dezenter */
 #calendar[data-view="week"] .week-appt-place {
-  
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  opacity: 0.75;
+  font-size: 0.75rem;
 }
 
 
@@ -962,3 +968,59 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   .shift-display { font-size: 0.75rem;}
   .option-item { font-size: 0.75rem; padding: 1px 1px;}
 } */
+/* ============================================
+   MOBILE (unter 480px)
+   ============================================ */
+@media (max-width: 480px) {
+
+  /* Allgemein kleinere Zellen im Week-View */
+  #calendar[data-view="week"] .day {
+    padding: 4px 4px;
+  }
+
+  /* Datumszahl */
+  #calendar[data-view="week"] .day-text {
+    font-size: 0.85rem;
+  }
+
+  /* Schichtkürzel */
+  #calendar[data-view="week"] .shift-display {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+  }
+
+  /* Terminliste */
+  #calendar[data-view="week"] .week-appt-list {
+    font-size: 0.70rem;   /* Gesamt-Reduktion */
+    gap: 1px;
+  }
+
+  /* Termine — 3-Spalten-Grid */
+  #calendar[data-view="week"] .week-appt-item {
+    grid-template-columns: auto minmax(0, 1.4fr) minmax(0, 1fr);
+    column-gap: 4px;
+  }
+
+  /* Zeit */
+  #calendar[data-view="week"] .week-appt-time {
+    font-size: 0.25rem;
+    white-space: nowrap;
+  }
+
+  /* Titel */
+  #calendar[data-view="week"] .week-appt-title {
+    font-size: 0.5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  /* Ort */
+  #calendar[data-view="week"] .week-appt-place {
+    font-size: 0.5rem;
+    opacity: 0.85;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
