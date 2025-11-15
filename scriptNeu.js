@@ -12,6 +12,15 @@ let deleteShiftMode = false;
 let currentView = "month";          // "month" | "week" | "year"
 let currentWeekAnchor = new Date(); // Startdatum der aktuellen Wochenansicht
 
+// ---- getCalendarWeekNumber ----
+function getISOWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7; // Montag=1 … Sonntag=7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum); // auf Donnerstag der Woche schieben
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return { week: weekNo, year: d.getUTCFullYear() };
+}
 
 
 // Für appointment.js als Guard sichtbar machen:
@@ -231,8 +240,7 @@ nextMonthBtn?.addEventListener("click", () => {
   }
 });
 
-  // prevMonthBtn?.addEventListener("click", () => changeMonth(-1));
-  // nextMonthBtn?.addEventListener("click", () => changeMonth(1));
+  
 
   const state = localStorage.getItem("federalState") || "BW"; // speicher dir den Code irgendwo
   syncHolidaysToAppointments(currentYear, state);
@@ -435,24 +443,30 @@ function renderWeekView(anchorDate = new Date()) {
   currentView = "week";
   calendar.dataset.view = "week";
   calendar.innerHTML = "";
+  calendar.innerHTML = "";
+
+  const rowsContainer = document.createElement("div");
+  rowsContainer.className = "week-rows";
+  calendar.appendChild(rowsContainer);
+
 
   // Start der Woche anhand weekStartDay bestimmen
   const start = new Date(anchorDate);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+
   const dayOfWeek = (start.getDay() - weekStartDay + 7) % 7; // 0..6
   start.setDate(start.getDate() - dayOfWeek);
 
   currentWeekAnchor = new Date(start); // merken für Pfeile
 
+  
   const headerEl = document.getElementById("calendar-header");
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-
-  const fmt = dt =>
-    `${String(dt.getDate()).padStart(2,"0")}.${String(dt.getMonth()+1).padStart(2,"0")}.${dt.getFullYear()}`;
-
+  const { week: isoWeek, year: isoYear } = getISOWeekNumber(start);
   if (headerEl) {
-    headerEl.textContent = `Woche ${fmt(start)} – ${fmt(end)}`;
+    headerEl.textContent = `KW ${isoWeek} · ${isoYear}`;
   }
+
 
   const weekDaysFull = ["So","Mo","Di","Mi","Do","Fr","Sa"];
 
@@ -460,17 +474,6 @@ function renderWeekView(anchorDate = new Date()) {
   for (let i = 0; i < 7; i++) {
     const cur = new Date(start);
     cur.setDate(start.getDate() + i);
-
-    // const row = document.createElement("div");
-    // row.className = "week-row";
-
-    // // linke Spalte: Wochentag + Datum
-    // const label = document.createElement("div");
-    // label.className = "week-label";
-    // const wdName = weekDaysFull[cur.getDay()];
-    // label.textContent =
-    //   `${wdName} ${String(cur.getDate()).padStart(2,"0")}.${String(cur.getMonth()+1).padStart(2,"0")}.`;
-    // row.appendChild(label);
 
         const row = document.createElement("div");
     row.className = "week-row";
@@ -508,10 +511,107 @@ function renderWeekView(anchorDate = new Date()) {
     calendar.appendChild(row);
   }
 
+  // renderWeekSummary(start, end, calendar);
+
   // gespeicherte Schichten / Status / Termine anwenden
   restoreAllDays();
   if (typeof restoreAppointments === "function") restoreAppointments();
 }
+
+
+/* =============================================
+ ---get the Appointments for the WeekView ----
+ ===============================================*/
+
+// function renderWeekSummary(weekStart, weekEnd, calendarEl) {
+//   // alte Summary entfernen, falls vorhanden
+//   const old = calendarEl.querySelector(".week-summary");
+//   if (old) old.remove();
+
+//   const summary = document.createElement("div");
+//   summary.className = "week-summary";
+
+//   // Überschrift
+//   const title = document.createElement("h4");
+//   title.textContent = "Termine dieser Woche";
+//   summary.appendChild(title);
+
+//   const list = document.createElement("div");
+//   list.className = "week-summary-list";
+//   summary.appendChild(list);
+
+//   // Wenn es die Appointment-Funktionen noch nicht gibt → leer lassen
+//   if (typeof loadAppointmentsMap !== "function") {
+//     calendarEl.appendChild(summary);
+//     return;
+//   }
+
+//   const map = loadAppointmentsMap();
+//   const items = [];
+
+//   // über 7 Tage iterieren
+//   const cur = new Date(weekStart);
+//   while (cur <= weekEnd) {
+//     const dateKey = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,"0")}-${String(cur.getDate()).padStart(2,"0")}`;
+//     const appts = map[dateKey] || [];
+//     if (appts.length) {
+//       const niceDate = `${String(cur.getDate()).padStart(2,"0")}.${String(cur.getMonth()+1).padStart(2,"0")}.`;
+//       appts.forEach(a => {
+//         items.push({
+//           dateLabel: niceDate,
+//           title: a.title || "Ohne Titel",
+//           start: a.start || "",
+//           end: a.end || "",
+//           location: a.location || ""
+//         });
+//       });
+//     }
+//     cur.setDate(cur.getDate() + 1);
+//   }
+
+//   if (!items.length) {
+//     const empty = document.createElement("div");
+//     empty.className = "week-summary-empty";
+//     empty.textContent = "Keine Termine in dieser Woche.";
+//     list.appendChild(empty);
+//   } else {
+//     items.sort((a,b) => (a.dateLabel + a.start).localeCompare(b.dateLabel + b.start));
+
+//     items.forEach(it => {
+//       const row = document.createElement("div");
+//       row.className = "week-summary-item";
+
+//       const dateEl = document.createElement("div");
+//       dateEl.className = "wsi-date";
+//       dateEl.textContent = it.dateLabel;
+
+//       const main = document.createElement("div");
+//       main.className = "wsi-main";
+
+//       const line1 = document.createElement("div");
+//       line1.className = "wsi-title";
+//       line1.textContent = it.title;
+
+//       const line2 = document.createElement("div");
+//       line2.className = "wsi-meta";
+//       const time = (it.start && it.end) ? `${it.start} – ${it.end}` : it.start || "";
+//       const parts = [];
+//       if (time) parts.push(time);
+//       if (it.location) parts.push(it.location);
+//       line2.textContent = parts.join(" · ");
+
+//       main.appendChild(line1);
+//       main.appendChild(line2);
+
+//       row.appendChild(dateEl);
+//       row.appendChild(main);
+//       list.appendChild(row);
+//     });
+//   }
+
+//   calendarEl.appendChild(summary);
+// }
+
 
 /* =========================
    YEAR VIEW (Scaffold)

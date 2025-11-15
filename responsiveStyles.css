@@ -750,41 +750,6 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 }
 
 
-/* ========== WEEK VIEW ========== */
-
-/* #calendar[data-view="week"] {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: 1.5rem 1fr;
-  gap: 5px;
-}
-
-#calendar[data-view="week"] .day-header {
-  display: grid;
-  align-items: end;
-  height: 1.5rem;
-}
-
-#calendar[data-view="week"] .day {
-  border: 1px solid #47adb5;
-  border-radius: 6px;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-#calendar[data-view="week"] .appt-dots {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 4px;
-  pointer-events: none;
-} */
 
 /* ========== WEEK VIEW – Agenda, volle Höhe ========== */
 
@@ -815,6 +780,7 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   align-items: center;
   justify-content: center;
   white-space: nowrap;
+  
 }
 
 .week-label-day {
