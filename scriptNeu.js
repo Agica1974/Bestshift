@@ -59,32 +59,51 @@ function renderStatusUI(dayEl, statusCode, statusColor) {
 }
 
 // Tag vollständig rendern (Base + Status)
+
 function renderDayRecord(dayEl, rec) {
   if (!dayEl) return;
   const label = dayEl.querySelector(".shift-display");
-  const isGray = dayEl.classList.contains("gray-day");
 
   // Reset
   dayEl.style.background = "";
   dayEl.style.backgroundColor = "";
-  if (label) { label.style.color = ""; label.textContent = ""; }
-
-  if (!rec) { renderStatusUI(dayEl, null, null); return; }
-
-  const baseShift = rec.shift || "";
-  const baseColor = rec.color || "";
-  const statusCode = rec.statusCode || "";
-  const statusColor = rec.statusColor || "";
-
-  // Base-Label
-  if (label) label.textContent = baseShift || "";
-
-  // Base-Farbe (keine 50/50, Status ist als Leiste)
-  if (baseColor) {
-    dayEl.style.backgroundColor = baseColor;
+  if (label) {
+    label.style.color = "";
+    label.style.backgroundColor = "";
+    label.style.padding = "";
+    label.style.borderRadius = "";
+    label.textContent = "";
   }
 
-  // Status unten als Leiste + Badge
+  if (!rec) {
+    renderStatusUI(dayEl, null, null);
+    return;
+  }
+
+  const baseShift   = rec.shift || "";
+  const baseColor   = rec.color || "";
+  const statusCode  = rec.statusCode || "";
+  const statusColor = rec.statusColor || "";
+
+  // Schichttext
+  if (label) label.textContent = baseShift || "";
+
+  // Schichtfarbe:
+  if (baseColor) {
+    if (currentView === "week") {
+      // 👉 nur als kleines "Pill" um den Text im Wochen-View
+      if (label) {
+        label.style.backgroundColor = baseColor;
+        label.style.padding = "2px 8px";
+        label.style.borderRadius = "999px";
+      }
+    } else {
+      // 👉 Monatsansicht & ggf. andere: ganze Zelle einfärben
+      dayEl.style.backgroundColor = baseColor;
+    }
+  }
+
+  // Status unten als Leiste + Badge bleibt wie gehabt
   renderStatusUI(dayEl, statusCode, statusColor);
 }
 
@@ -408,62 +427,91 @@ function createCalendar() {
 /* =========================
    WEEK VIEW (Scaffold)
    ========================= */
+
 function renderWeekView(anchorDate = new Date()) {
   const calendar = document.getElementById("calendar");
   if (!calendar) return;
 
-  currentView = "week";           // <--- wichtig für Pfeile
+  currentView = "week";
   calendar.dataset.view = "week";
   calendar.innerHTML = "";
 
   // Start der Woche anhand weekStartDay bestimmen
-  const d = new Date(anchorDate);
-  const dow = (d.getDay() - weekStartDay + 7) % 7; // 0..6
-  d.setDate(d.getDate() - dow); // Wochenanfang
+  const start = new Date(anchorDate);
+  const dayOfWeek = (start.getDay() - weekStartDay + 7) % 7; // 0..6
+  start.setDate(start.getDate() - dayOfWeek);
 
-  // aktuellen Anchor für Vor/Zurück speichern
-  currentWeekAnchor = new Date(d);
+  currentWeekAnchor = new Date(start); // merken für Pfeile
 
-  // Kopfzeile mit Wochentagen
-  const weekDays = ["So","Mo","Di","Mi","Do","Fr","Sa"];
-  const adjusted = weekDays
-    .slice(weekStartDay)
-    .concat(weekDays.slice(0, weekStartDay));
+  const headerEl = document.getElementById("calendar-header");
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
 
-  adjusted.forEach(day => {
-    const head = document.createElement("div");
-    head.classList.add("day-header");
-    head.textContent = day;
-    calendar.appendChild(head);
-  });
+  const fmt = dt =>
+    `${String(dt.getDate()).padStart(2,"0")}.${String(dt.getMonth()+1).padStart(2,"0")}.${dt.getFullYear()}`;
 
-  // 7 Tage rendern
-  const start = new Date(d);
+  if (headerEl) {
+    headerEl.textContent = `Woche ${fmt(start)} – ${fmt(end)}`;
+  }
+
+  const weekDaysFull = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+  // 7 Zeilen: jede Zeile = Wochentag links + "Tag" rechts
   for (let i = 0; i < 7; i++) {
     const cur = new Date(start);
     cur.setDate(start.getDate() + i);
-    const el = createDayElement(
+
+    // const row = document.createElement("div");
+    // row.className = "week-row";
+
+    // // linke Spalte: Wochentag + Datum
+    // const label = document.createElement("div");
+    // label.className = "week-label";
+    // const wdName = weekDaysFull[cur.getDay()];
+    // label.textContent =
+    //   `${wdName} ${String(cur.getDate()).padStart(2,"0")}.${String(cur.getMonth()+1).padStart(2,"0")}.`;
+    // row.appendChild(label);
+
+        const row = document.createElement("div");
+    row.className = "week-row";
+
+    // linke Spalte: Wochentag + Datum (2-zeilig)
+    const label = document.createElement("div");
+    label.className = "week-label";
+
+    const wdName = weekDaysFull[cur.getDay()];
+
+    const daySpan = document.createElement("div");
+    daySpan.className = "week-label-day";
+    daySpan.textContent = wdName;
+
+    const dateSpan = document.createElement("div");
+    dateSpan.className = "week-label-date";
+    dateSpan.textContent =
+      `${String(cur.getDate()).padStart(2,"0")}.${String(cur.getMonth()+1).padStart(2,"0")}.`;
+
+    label.appendChild(daySpan);
+    label.appendChild(dateSpan);
+
+    row.appendChild(label);
+
+
+    // rechte Spalte: "Tag" wie im Monat (für Schicht + Termine)
+    const dayEl = createDayElement(
       cur.getDate(),
       cur.getMonth(),
       cur.getFullYear(),
       false
     );
-    calendar.appendChild(el);
+    row.appendChild(dayEl);
+
+    calendar.appendChild(row);
   }
 
-  // Header-Text, z. B. „Woche 06.01.2025 – 12.01.2025“
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  const fmt = (dt) =>
-    `${String(dt.getDate()).padStart(2,"0")}.${String(dt.getMonth()+1).padStart(2,"0")}.${dt.getFullYear()}`;
-  const headerEl = document.getElementById("calendar-header");
-  if (headerEl) headerEl.textContent = `Woche ${fmt(start)} – ${fmt(end)}`;
-
-  // gespeicherte Schichten und Termine einblenden
+  // gespeicherte Schichten / Status / Termine anwenden
   restoreAllDays();
   if (typeof restoreAppointments === "function") restoreAppointments();
 }
-
 
 /* =========================
    YEAR VIEW (Scaffold)

@@ -752,7 +752,7 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 
 /* ========== WEEK VIEW ========== */
 
-#calendar[data-view="week"] {
+/* #calendar[data-view="week"] {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: 1.5rem 1fr;
@@ -784,7 +784,85 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   display: flex;
   gap: 4px;
   pointer-events: none;
+} */
+
+/* ========== WEEK VIEW – Agenda, volle Höhe ========== */
+
+#calendar[data-view="week"] {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;        /* nimmt den ganzen freien Platz der calendar-container-Zeile */
+  min-height: 0;       /* wichtig für korrektes Flex-Shrinking */
+  overflow: hidden;    /* kein Scroll, Zeilen teilen sich die Höhe */
 }
+
+/* Eine Zeile pro Tag – alle Zeilen teilen sich die Höhe gleichmäßig */
+.week-row {
+  display: grid;
+  grid-template-columns: auto 1fr; /* links Label, rechts Day-Zelle */
+  column-gap: 6px;
+  align-items: stretch;
+  flex: 1 1 0;          /* jede Zeile bekommt gleich viel Platz */
+  min-height: 0;
+}
+
+/* linke Spalte: Wochentag + Datum, vertikal zentriert, 2 Zeilen */
+.week-label {
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.week-label-day {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.week-label-date {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* rechte Spalte: "day" als Box für Schichten/Pills + Punkte */
+#calendar[data-view="week"] .day {
+  border: 1px solid #47adb5;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* das Datum im Day-Element im Wochenview ausblenden –
+   Datum steht ja links in week-label */
+#calendar[data-view="week"] .day-text {
+  display: none;
+}
+
+/* Schicht-Text in Woche etwas kleiner */
+#calendar[data-view="week"] .shift-display {
+  font-size: 0.9rem;
+}
+
+/* Termin-Punkte rechts mittig in der Day-Zelle */
+#calendar[data-view="week"] .appt-dots {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  left: auto;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 4px;
+  pointer-events: none;
+}
+
 
 
 /* ========== YEAR VIEW ========== */
