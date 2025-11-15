@@ -841,7 +841,7 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 
 #calendar[data-view="week"] .week-appt-item {
   display: flex;
-  gap: 4px;
+  gap: 20px;
   align-items: baseline;
 }
 
@@ -853,12 +853,18 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
 }
 
 #calendar[data-view="week"] .week-appt-title {
-  flex: 1;
+  /* flex: 1; */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+#calendar[data-view="week"] .week-appt-place {
+  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 
 

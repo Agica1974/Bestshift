@@ -619,8 +619,13 @@ function renderAppointmentsInWeekDayCell(dayEl, list) {
     title.className = "week-appt-title";
     title.textContent = appt.title || "Ohne Titel";
 
+    const location = document.createElement("span");
+    location.className = "week-appt-place";
+    location.textContent = appt.location;
+
     row.appendChild(time);
     row.appendChild(title);
+    row.appendChild(location);
 
     wrap.appendChild(row);
   });
