@@ -12,6 +12,20 @@ let deleteShiftMode = false;
 let currentView = "month";          // "month" | "week" | "year"
 let currentWeekAnchor = new Date(); // Startdatum der aktuellen Wochenansicht
 
+// Für appointment.js sichtbar machen:
+Object.defineProperty(window, "currentView", {
+  get: () => currentView,
+  set: (v) => { currentView = v; },
+  configurable: true
+});
+
+Object.defineProperty(window, "currentWeekAnchor", {
+  get: () => currentWeekAnchor,
+  set: (v) => { currentWeekAnchor = v; },
+  configurable: true
+});
+
+
 // ---- getCalendarWeekNumber ----
 function getISOWeekNumber(date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));

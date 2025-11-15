@@ -577,8 +577,90 @@ function ensureDotsContainer(dayEl) {
   }
   return wrap;
 }
+
+// Termine als Liste in der Wochenansicht anzeigen
+function renderAppointmentsInWeekDayCell(dayEl, list) {
+  if (!dayEl) return;
+
+  // evtl. vorhandene Punkte & alte Listen leeren
+  const dots = dayEl.querySelector(".appt-dots");
+  if (dots) dots.innerHTML = "";
+
+  let wrap = dayEl.querySelector(".week-appt-list");
+  if (!wrap) {
+    wrap = document.createElement("div");
+    wrap.className = "week-appt-list";
+    dayEl.appendChild(wrap);
+  }
+  wrap.innerHTML = "";
+
+  if (!Array.isArray(list) || list.length === 0) {
+    return; // nichts anzeigen
+  }
+
+  // sortiere nach Startzeit
+  const sorted = [...list].sort((a, b) => {
+    const as = a.start || "";
+    const bs = b.start || "";
+    return as.localeCompare(bs);
+  });
+
+  sorted.forEach(appt => {
+    const row = document.createElement("div");
+    row.className = "week-appt-item";
+
+    const time = document.createElement("span");
+    time.className = "week-appt-time";
+    time.textContent = (appt.start && appt.end)
+      ? `${appt.start}–${appt.end}`
+      : (appt.start || "");
+
+    const title = document.createElement("span");
+    title.className = "week-appt-title";
+    title.textContent = appt.title || "Ohne Titel";
+
+    row.appendChild(time);
+    row.appendChild(title);
+
+    wrap.appendChild(row);
+  });
+}
+
+
+// function renderAppointmentDotsForDayElement(dayEl, list) {
+//   if (!dayEl) return;
+//   const wrap = ensureDotsContainer(dayEl);
+//   wrap.innerHTML = "";
+
+//   const maxDots = 3;
+//   const count = Array.isArray(list) ? list.length : 0;
+//   const shown = Math.min(count, maxDots);
+
+//   for (let i = 0; i < shown; i++) {
+//     const dot = document.createElement("span");
+//     dot.className = "appt-dot";
+//     wrap.appendChild(dot);
+//   }
+//   if (count > maxDots) {
+//     const more = document.createElement("span");
+//     more.className = "appt-plus";
+//     more.textContent = `+${count - maxDots}`;
+//     wrap.appendChild(more);
+//   }
+// }
+
 function renderAppointmentDotsForDayElement(dayEl, list) {
   if (!dayEl) return;
+
+  const view = window.currentView || "month";
+
+  // 👉 In der Wochenansicht: Text-Liste statt Punkte
+  if (view === "week") {
+    renderAppointmentsInWeekDayCell(dayEl, list || []);
+    return;
+  }
+
+  // 👉 In Monats-/Jahresansicht: Dots wie gehabt
   const wrap = ensureDotsContainer(dayEl);
   wrap.innerHTML = "";
 
@@ -598,12 +680,16 @@ function renderAppointmentDotsForDayElement(dayEl, list) {
     wrap.appendChild(more);
   }
 }
+
+
 function renderAppointmentDotsForDate(dateKey) {
   const dayEl = document.querySelector(`[data-date='${dateKey}']`);
   if (!dayEl) return;
   const map = loadAppointmentsMap();
   renderAppointmentDotsForDayElement(dayEl, map[dateKey] || []);
 }
+
+
 function updateCalendarDisplay(dateKey) {
   renderAppointmentDotsForDate(dateKey);
 }

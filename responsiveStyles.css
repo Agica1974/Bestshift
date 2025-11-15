@@ -829,6 +829,37 @@ Settings-Modal für den Ansichten (zentriert wie dein Center-Mode)
   pointer-events: none;
 }
 
+/* Termine als Liste in der Wochenansicht */
+#calendar[data-view="week"] .week-appt-list {
+  margin-left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.78rem;
+  align-self: stretch;
+}
+
+#calendar[data-view="week"] .week-appt-item {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+}
+
+#calendar[data-view="week"] .week-appt-time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+  opacity: 0.8;
+  font-size: 0.75rem;
+}
+
+#calendar[data-view="week"] .week-appt-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 
 
 /* ========== YEAR VIEW ========== */
